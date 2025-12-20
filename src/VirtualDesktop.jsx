@@ -94,7 +94,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
       "./pictures/Screenshot.png", 
       "./pictures/Screenshot0.png"
     ],
-    learned: "I learned how to optimize matrix operations using NumPy to handle real-time video data. I also gained a deep understanding of the trade-offs between HOG and CNN face detectors—balancing accuracy vs. speed for real-world deployment.",
+    learned: "I learned how to optimize matrix operations using NumPy to handle real-time video data. I also gained a deep understanding of the trade offs between HOG and CNN face detectors which is balancing accuracy vs. speed for real world deployment.",
     links: {
       github: "https://github.com/AweleChizim/projects/tree/main/Face%20Recognition%20System%20Group%202", 
       demo: null 
