@@ -169,7 +169,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
                   <img 
-                    src="./pictures/IMG_2261.JPG" 
+                    src="/pictures/IMG_2261.JPG" 
                     alt="Gina 1" 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                   />
@@ -187,7 +187,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
                    <img 
-                    src="./pictures/IMG_2269.JPG" 
+                    src="/pictures/IMG_2269.JPG" 
                     alt="Gina 2" 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
                   />
@@ -205,7 +205,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
                    <img 
-                    src="./pictures/IMG_2265.JPG" 
+                    src="/pictures/IMG_2265.JPG" 
                     alt="Gina 3" 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
                   />
