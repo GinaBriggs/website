@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, FolderOpen, Mail, GripHorizontal } from 'lucide-react';
+import { User, FolderOpen, Mail, GripHorizontal, Brain } from 'lucide-react'; 
+import TrainingSim from './TrainingSim'; 
+import DecisionBoundary from './DecisionBoundary';
+import FaceRecognition from './FaceRecognition';
+import ProjectDetail from './ProjectDetail';
 
 const VirtualDesktop = ({ startSlideshow }) => {
   const [openWindows, setOpenWindows] = useState([]);
@@ -9,7 +13,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
   // --- 1. BACKGROUND CONFIGURATION ---
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
   
-  // Replace these with your own image paths
   const backgroundImages = [
     "./pictures/Wallpaper1.jpg",
     "./pictures/Wallpaper2.jpg",
@@ -19,7 +22,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
     "./pictures/Wallpaper6.jpg",
     "./pictures/Wallpaper7.jpg",
     "./pictures/Wallpaper8.jpg",
-    // Add as many as you want...
   ];
 
   // --- 2. SLIDESHOW TIMER ---
@@ -27,15 +29,133 @@ const VirtualDesktop = ({ startSlideshow }) => {
     if (!startSlideshow) return;
     const timer = setInterval(() => {
       setCurrentBgIndex((prev) => (prev + 1) % backgroundImages.length);
-    }, 6000); // Change image every 6 seconds
+    }, 6000); 
 
     return () => clearInterval(timer);
   }, [backgroundImages.length, startSlideshow]);
 
-  // --- CONTENT CONFIGURATION ---
-  const desktopIcons = [
+  // --- 3. WINDOW MANAGEMENT LOGIC ---
 
-      {
+  const openWindow = (appConfig) => {
+    // Check if window is already open
+    if (!openWindows.find(w => w.id === appConfig.id)) {
+      const newWindow = {
+        id: appConfig.id,
+        title: appConfig.content.title,     
+        body: appConfig.content.body,       
+        x: 50 + openWindows.length * 30,
+        y: 50 + openWindows.length * 30,
+        // Custom sizes for specific apps
+        width: (appConfig.id === 'trainingsim' || appConfig.id === 'facerecodetails' || appConfig.id === 'facereco') ? 1000 : 500,
+        height: (appConfig.id === 'trainingsim' || appConfig.id === 'facerecodetails' || appConfig.id === 'facereco') ? 700 : 500,
+      };
+      setOpenWindows([...openWindows, newWindow]);
+      setActiveWindow(appConfig.id);
+    } else {
+      // If open, just bring to front
+      setActiveWindow(appConfig.id);
+    }
+  };
+
+  const closeWindow = (id) => {
+    setOpenWindows(openWindows.filter(w => w.id !== id));
+    if (activeWindow === id) {
+      setActiveWindow(openWindows[openWindows.length - 2]?.id || null);
+    }
+  };
+
+  const bringToFront = (id) => {
+    setActiveWindow(id);
+  };
+
+  const updateWindow = (id, newProps) => {
+    setOpenWindows(prev => prev.map(w => 
+      w.id === id ? { ...w, ...newProps } : w
+    ));
+  };
+
+  // --- 4. APP DATA & CONFIGURATIONS ---
+
+  // *** IMPORTANT: Define Data Object BEFORE using it in Config ***
+  const faceRecoData = {
+    title: "Biometric Security System",
+    tagline: "A Python-based facial recognition pipeline achieving 98% accuracy on local datasets using Euclidean distance mapping.",
+    category: "Computer Vision",
+    date: "Fall 2024",
+    problem: "Traditional security systems rely on keycards or passwords, which can be stolen. I needed to build a touchless, spoof-proof identity verification system that could run on standard hardware without expensive cloud APIs.",
+    features: [
+      { title: "Real-time Detection", desc: "Processes video feeds at 30fps using optimized HOG (Histogram of Oriented Gradients) algorithms." },
+      { title: "128-Point Encoding", desc: "Maps unique facial features to a 128-dimensional vector space for high-precision comparison." },
+      { title: "Local Processing", desc: "Privacy-first architecture. No biometric data is ever sent to the cloud." },
+      { title: "Dynamic Resizing", desc: "Implements adaptive frame scaling (0.25x) to maintain performance on lower-end CPUs." }
+    ],
+    tech: ["Python 3.9", "OpenCV", "dlib", "NumPy", "Face_Recognition"],
+    screenshots: [
+      "./pictures/Screenshot.png", 
+      "./pictures/Screenshot0.png"
+    ],
+    learned: "I learned how to optimize matrix operations using NumPy to handle real-time video data. I also gained a deep understanding of the trade-offs between HOG and CNN face detectors—balancing accuracy vs. speed for real-world deployment.",
+    links: {
+      github: "https://github.com/AweleChizim/projects/tree/main/Face%20Recognition%20System%20Group%202", 
+      demo: null 
+    }
+  };
+
+  // --- APP DEFINITIONS (Hidden Apps) ---
+
+  const simAppConfig = {
+    id: 'trainingsim',
+    label: 'AI Training Sim',
+    content: {
+      title: 'Training Dynamics Visualization',
+      body: (
+        <div className="w-full h-full bg-black overflow-hidden relative">
+          <TrainingSim />
+        </div>
+      )
+    }
+  };
+
+  const classifierAppConfig = {
+    id: 'decisionboundary',
+    label: 'Interactive Classifier',
+    content: {
+      title: 'Teach a Neural Network',
+      body: (
+        <div className="w-full h-full bg-gray-900 overflow-hidden relative">
+          <DecisionBoundary />
+        </div>
+      )
+    }
+  };
+
+  const faceRecoAppConfig = {
+    id: 'facereco',
+    label: 'Face Recognition Code',
+    content: {
+      title: 'Project Source Code',
+      body: (
+        <div className="w-full h-full bg-[#1e1e1e] overflow-hidden relative">
+          <FaceRecognition />
+        </div>
+      )
+    }
+  };
+
+  const faceRecoDetailsConfig = {
+    id: 'facerecodetails',
+    label: 'Face ID Case Study',
+    content: {
+      title: 'Project: Biometric Security',
+      body: (
+        <ProjectDetail project={faceRecoData} onBack={() => closeWindow('facerecodetails')} />
+      )
+    }
+  };
+
+  // --- 5. DESKTOP ICONS (Main Menu) ---
+  const desktopIcons = [
+    {
       id: 'about',
       label: 'About Me',
       icon: User,
@@ -46,10 +166,8 @@ const VirtualDesktop = ({ startSlideshow }) => {
             
             {/* --- PARAGRAPH 1: Picture LEFT --- */}
             <div className="flex flex-col md:flex-row gap-6 items-center">
-              {/* Image Container */}
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
-                  {/* REPLACE src WITH YOUR IMAGE PATH (e.g., src="/profile1.jpg") */}
                   <img 
                     src="./pictures/IMG_2261.JPG" 
                     alt="Gina 1" 
@@ -68,7 +186,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
               {/* Image Container */}
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
-                   {/* REPLACE src WITH YOUR IMAGE PATH */}
                    <img 
                     src="./pictures/IMG_2269.JPG" 
                     alt="Gina 2" 
@@ -87,7 +204,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
               {/* Image Container */}
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
-                   {/* REPLACE src WITH YOUR IMAGE PATH */}
                    <img 
                     src="./pictures/IMG_2265.JPG" 
                     alt="Gina 3" 
@@ -104,7 +220,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
           </div>
         )
       }
-
     },
     {
       id: 'projects',
@@ -113,12 +228,86 @@ const VirtualDesktop = ({ startSlideshow }) => {
       content: {
         title: 'My Projects',
         body: (
-          <div className="space-y-4">
+          <div className="space-y-6">
+            
+            {/* Project 1 */}
             <div className="border-b border-gray-200 pb-4">
               <h4 className="font-semibold text-gray-800 mb-2">3D Portfolio Website</h4>
               <p className="text-gray-600 text-sm">Interactive portfolio with Three.js and React</p>
             </div>
-            {/* Add more projects here */}
+
+            {/* Project 2 - THE SIMULATOR LAUNCHER */}
+            <div className="border-b border-gray-200 pb-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Training Dynamics Simulator</h4>
+                  <p className="text-gray-600 text-sm mb-3">
+                    A visual exploration of how neural networks learn, built with Three.js.
+                    Visualizes high-dimensional manifold optimization.
+                  </p>
+                </div>
+                <Brain className="w-10 h-10 text-gray-300 shrink-0 ml-4" />
+              </div>
+              
+              <button 
+                onClick={() => openWindow(simAppConfig)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
+              >
+                <Brain className="w-4 h-4" />
+                Launch Simulator
+              </button>
+            </div>
+
+            {/* Project 3 - CLASSIFIER */}
+            <div className="border-b border-gray-200 pb-4">
+              <h4 className="font-semibold text-gray-800 mb-2">Interactive Neural Classifier</h4>
+              <p className="text-gray-600 text-sm mb-2">
+                 Click to add data points and watch a tiny neural network learn to classify them in real time.
+              </p>
+              <button 
+                onClick={() => openWindow(classifierAppConfig)}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm text-sm font-medium"
+              >
+                Launch Playground
+              </button>
+            </div>
+
+            {/* Project 4 - FACE RECOGNITION */}
+            <div className="border-b border-gray-200 pb-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Face Recognition System</h4>
+                  <p className="text-gray-600 text-sm mb-3">
+                    A Python-based biometric security system using OpenCV and Deep Learning embeddings.
+                  </p>
+                </div>
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 ml-4">
+                  <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+                  </svg>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => openWindow(faceRecoAppConfig)}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-gray-800 text-white rounded text-xs font-medium hover:bg-black transition-colors"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                  </svg>
+                  View Code
+                </button>
+
+                <button 
+                  onClick={() => openWindow(faceRecoDetailsConfig)}
+                  className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded text-xs font-medium hover:bg-blue-200 transition-colors"
+                >
+                  Read Case Study
+                </button>
+              </div>
+            </div>
+
           </div>
         )
       }
@@ -135,7 +324,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
             <div className="space-y-3">
               
               {/* 1. EMAIL LINK */}
-              {/* Change href="mailto:..." to your actual email */}
               <a 
                 href="mailto:gina.captain-briggs@pau.edu.ng"
                 className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group cursor-pointer"
@@ -145,7 +333,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
               </a>
 
               {/* 2. LINKEDIN LINK */}
-              {/* Change href="..." to your actual LinkedIn URL */}
               <a 
                 href="https://www.linkedin.com/in/ginacaptainbriggs" 
                 target="_blank" 
@@ -158,6 +345,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
                 <span className="text-gray-700 font-medium">Linkedin </span>
               </a>
 
+              {/* 3. GITHUB LINK */}
               <a 
                 href="https://github.com/GinaBriggs" 
                 target="_blank" 
@@ -177,47 +365,10 @@ const VirtualDesktop = ({ startSlideshow }) => {
     }
   ];
 
-  // --- WINDOW MANAGEMENT LOGIC ---
-
-  const openWindow = (icon) => {
-    if (!openWindows.find(w => w.id === icon.id)) {
-      const newWindow = {
-        id: icon.id,
-        ...icon.content,
-        x: 100 + openWindows.length * 30,
-        y: 50 + openWindows.length * 30,
-        width: 500,  // Default Width
-        height: 400, // Default Height
-      };
-      setOpenWindows([...openWindows, newWindow]);
-      setActiveWindow(icon.id);
-    } else {
-      setActiveWindow(icon.id);
-    }
-  };
-
-  const closeWindow = (id) => {
-    setOpenWindows(openWindows.filter(w => w.id !== id));
-    if (activeWindow === id) {
-      setActiveWindow(openWindows[openWindows.length - 2]?.id || null);
-    }
-  };
-
-  const bringToFront = (id) => {
-    setActiveWindow(id);
-  };
-
-  // Updates position OR size based on what changed
-  const updateWindow = (id, newProps) => {
-    setOpenWindows(prev => prev.map(w => 
-      w.id === id ? { ...w, ...newProps } : w
-    ));
-  };
-
   return (
     <div className="fixed inset-0 pointer-events-none z-20">
       
-    {/* --- HERE WAS THE MISSING PART: THE BACKGROUND LAYER --- */}
+    {/* BACKGROUND LAYER */}
     <div className="absolute inset-0 -z-10 overflow-hidden bg-black/10">
       <AnimatePresence mode="popLayout">
         <motion.img
@@ -237,6 +388,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
         {desktopIcons.map((icon) => (
           <motion.button
             key={icon.id}
+            id={`btn-${icon.id}`} 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => openWindow(icon)}
@@ -270,30 +422,22 @@ const VirtualDesktop = ({ startSlideshow }) => {
 };
 
 // --- DRAGGABLE & RESIZABLE COMPONENT ---
-
 const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }) => {
   const windowRef = useRef(null);
-  
-  // Interaction State
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
-  
-  // Store initial values for calculations
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
   const [initialDims, setInitialDims] = useState({ x: 0, y: 0, w: 0, h: 0 });
 
-  // 1. Handle Dragging (Title Bar)
   const handleMouseDownDrag = (e) => {
-    if (e.target.closest('.window-controls')) return; // Don't drag if clicking buttons
-    
-    e.preventDefault(); // Prevent text selection
+    if (e.target.closest('.window-controls')) return;
+    e.preventDefault(); 
     onBringToFront(window.id);
     setIsDragging(true);
     setStartPos({ x: e.clientX, y: e.clientY });
     setInitialDims({ x: window.x, y: window.y });
   };
 
-  // 2. Handle Resizing (Corner Handle)
   const handleMouseDownResize = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -303,7 +447,6 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
     setInitialDims({ w: window.width, h: window.height });
   };
 
-  // 3. Global Mouse Move Listener
   useEffect(() => {
     const handleMouseMove = (e) => {
       if (isDragging) {
@@ -319,8 +462,8 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
         const dx = e.clientX - startPos.x;
         const dy = e.clientY - startPos.y;
         onUpdate(window.id, {
-          width: Math.max(300, initialDims.w + dx), // Min width 300px
-          height: Math.max(200, initialDims.h + dy) // Min height 200px
+          width: Math.max(300, initialDims.w + dx),
+          height: Math.max(200, initialDims.h + dy)
         });
       }
     };
@@ -359,8 +502,6 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
       onMouseDown={() => onBringToFront(window.id)}
     >
       <div className="flex flex-col h-full bg-white/80 backdrop-blur-xl rounded-xl shadow-2xl border border-white/50 overflow-hidden relative">
-        
-        {/* --- HEADER (Draggable Area) --- */}
         <div 
           className="window-header bg-gradient-to-r from-gray-100/90 to-gray-50/90 px-4 py-3 flex items-center justify-between cursor-move border-b border-gray-200/50 shrink-0 select-none"
           onMouseDown={handleMouseDownDrag}
@@ -380,23 +521,17 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
             </button>
           </div>
         </div>
-
-        {/* --- CONTENT (Scrollable Area) --- */}
-        <div className="flex-1 overflow-auto p-6">
+        <div className={`flex-1 overflow-auto ${['trainingsim', 'facereco', 'decisionboundary', 'facerecodetails'].includes(window.id) ? 'p-0' : 'p-6'}`}>
           {window.body}
         </div>
-
-        {/* --- RESIZE HANDLE (Bottom Right Corner) --- */}
         <div 
           className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize flex items-center justify-center z-50 hover:bg-gray-200/50 rounded-tl-lg transition-colors"
           onMouseDown={handleMouseDownResize}
         >
-          {/* Visual indicator for the corner */}
           <svg className="w-4 h-4 text-gray-400 -rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor">
              <path d="M21 21H12M21 21V12" strokeWidth="2" strokeLinecap="round"/>
           </svg>
         </div>
-
       </div>
     </motion.div>
   );
