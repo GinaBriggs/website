@@ -92,7 +92,11 @@ export default function App() {
       >
         <Spline 
           scene={splineUrl} 
-          onLoad={handleSplineLoad} 
+          onLoad={handleSplineLoad}
+          // This tells Spline: "If I am on mobile and the desktop is open, STOP listening."
+          style={{
+            pointerEvents: (showDesktop && window.innerWidth < 768) ? 'none' : 'auto'
+          }}
         />
       </div>
 
@@ -106,13 +110,11 @@ export default function App() {
           It catches all mouse events so they don't hit the 3D scene. */}
       {(isZooming || showDesktop) && (
         <div 
+          className="absolute top-0 left-0 w-full h-full z-[5]" // Tailwind for z-index 5
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            zIndex: 5, 
+            // This is the key: On mobile, this div covers the 3D scene completely
+            // capturing all touches so they don't spin the camera.
+            touchAction: 'auto', 
           }}
         />
       )}

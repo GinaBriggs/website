@@ -369,7 +369,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
     <div className="fixed inset-0 pointer-events-none z-20">
       
     {/* BACKGROUND LAYER */}
-    <div className="absolute inset-0 -z-10 overflow-hidden bg-black/10">
+    <div className="fixed inset-0 pointer-events-none z-30">
       <AnimatePresence mode="popLayout">
         <motion.img
           key={currentBgIndex}
@@ -384,7 +384,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
     </div>
 
     {/* Desktop Icons */}
-      <div className="absolute top-8 left-8 flex flex-col gap-6 pointer-events-auto">
+      <div className="absolute top-8 left-8 flex flex-col gap-6 pointer-events-auto z-40">
         {desktopIcons.map((icon) => (
           <motion.button
             key={icon.id}
