@@ -15,9 +15,8 @@ export default function App() {
   const [isZooming, setIsZooming] = useState(false);
   const [showDesktop, setShowDesktop] = useState(false);
 
-  // --- NEW: Reset Key ---
-  // We use this to force the Spline scene to reload from scratch when exiting.
-  // This ensures the camera resets to the room view instead of getting stuck zoomed in.
+  // 3. Reset Key (Forces Scene Reload)
+  // We use this to force the Spline scene to reload from scratch when exiting on Desktop.
   const [resetKey, setResetKey] = useState(0);
 
   // Your Spline URL (Cached once)
@@ -51,14 +50,24 @@ export default function App() {
   };
 
   // --- 3. RETURN HANDLER (Back Button) ---
-  // This reverses the process: Fades out desktop -> Resets Zoom -> Reloads Scene
+  // This reverses the process.
+  // FIX: Added Mobile check to prevent reloading the scene on phones (prevents white flash).
   const handleReturn = () => {
     setShowDesktop(false); // 1. Fade out UI first
     
     setTimeout(() => {
-      setIsZooming(false);           // 2. Reset Zoom state
-      setResetKey(prev => prev + 1); // 3. FORCE RESET the 3D Scene (Changes the key, forcing React to reload it)
-      setIsResetting(true);          // 4. Trigger Silent Fade (No Spinner)
+      const isMobile = window.innerWidth < 768;
+
+      if (isMobile) {
+        // MOBILE: Just reset the UI state. 
+        // We DO NOT increment resetKey here, so the scene doesn't reload/flash white.
+        setIsZooming(false);
+      } else {
+        // DESKTOP: We must reload the scene to reset the Camera Zoom.
+        setIsZooming(false);           
+        setResetKey(prev => prev + 1); // Force React to re-render Spline
+        setIsResetting(true);          // Trigger Silent Fade
+      }
     }, 500); // Short delay for smooth transition
   };
 
@@ -81,7 +90,7 @@ export default function App() {
       
       {/* --------------------------------------------------
           LAYER 0: The Loading Screen (SPINNER)
-          FIX: Only shows on 'isLoading' (First visit), NOT on 'isResetting'
+          Only shows on 'isLoading' (First visit), NOT on 'isResetting'
          -------------------------------------------------- */}
       <div style={{
         position: 'absolute',
@@ -89,7 +98,7 @@ export default function App() {
         left: 0,
         width: '100%',
         height: '100%',
-        zIndex: 100, // FIX: Increased to 100 to ensure it covers watermark 
+        zIndex: 100, 
         backgroundColor: '#f0f0f0', 
         display: 'flex',
         alignItems: 'center',
@@ -108,7 +117,6 @@ export default function App() {
           LAYER 1: The 3D Scene (Clickable Layer)
          -------------------------------------------------- */}
       <div 
-        // We keep this for desktop users who might click the background
         onClick={handleSceneClick} 
         style={{ 
           position: 'absolute', 
@@ -119,7 +127,7 @@ export default function App() {
           zIndex: 1,
           
           // Disable pointer events on the wrapper if we are zooming/desktop is open
-          // CRITICAL FIX: Also disable on mobile so tapping doesn't rotate camera
+          // Also disable on mobile so tapping doesn't rotate camera
           pointerEvents: window.innerWidth < 768 ? 'none' : (isZooming || showDesktop ? 'none' : 'auto'),
 
           cursor: (!isLoading && !isZooming && !isResetting) ? 'pointer' : 'default',
@@ -130,12 +138,10 @@ export default function App() {
           opacity: (isLoading || isResetting) ? 0 : 1 
         }}
       >
-        {/* FIX: Added key={resetKey} to force full reload on exit */}
         <Spline 
           key={resetKey}
           scene={splineUrl} 
           onLoad={handleSplineLoad}
-          // Extra safety: Stop Spline from listening on mobile
           style={{ pointerEvents: window.innerWidth < 768 ? 'none' : 'auto' }}
         />
       </div>
@@ -146,20 +152,16 @@ export default function App() {
           position: 'absolute',
           inset: 0,
           zIndex: 40, 
-          // FIX 1: pointerEvents 'none' allows clicks to pass through to the scene
-          pointerEvents: 'none', 
+          pointerEvents: 'none', // Allows clicks to pass through to the 3D scene
           transition: 'opacity 0.5s ease',
-          // FIX 2: opacity is always 1, so it NEVER disappears
-          opacity: 1
+          opacity: 1 // Always visible
         }}
       >
-        {/* Note: The Watermark component itself handles its own clickability */}
         <Watermark />
       </div>
 
-      {/* LAYER 1.5: THE INVISIBLE SHIELD (The Fix) */}
+      {/* LAYER 1.5: THE INVISIBLE SHIELD */}
       {/* This blocks touches on the 3D scene so mobile users can scroll the desktop windows */}
-      {/* Also prevents 'drag' gestures on mobile by covering the scene with a transparent div */}
       <div className="absolute inset-0 z-[2] md:hidden pointer-events-auto bg-transparent" />
       
       {(isZooming || showDesktop) && (
@@ -180,13 +182,12 @@ export default function App() {
         left: 0, 
         width: '100%', 
         height: '100%', 
-        zIndex: 10, // Increased Z-Index to ensure button is clickable
+        zIndex: 10, 
         pointerEvents: 'none', 
         transition: 'opacity 0.5s ease', 
         // Hide Hero if Loading, Zooming, OR Resetting
         opacity: (isLoading || isZooming || isResetting) ? 0 : 1 
       }}>
-         {/* Render the Hero Text */}
          <HeroSection />
 
          {/* --- ENTER BUTTON (MOBILE ONLY) --- */}
@@ -194,7 +195,6 @@ export default function App() {
            <div className="absolute bottom-40 left-0 w-full flex justify-center z-[60] md:hidden pointer-events-auto">
              <button
                onClick={handleMobileEnter}
-               // STYLE FIX: Changed to Glassmorphism (White/40 with Blur) instead of harsh Black
                className="bg-white/40 text-gray-900 px-8 py-3 rounded-full font-semibold backdrop-blur-md border border-white/50 shadow-xl active:scale-95 transition-transform"
              >
                Enter Portfolio
@@ -217,7 +217,6 @@ export default function App() {
         transition: 'opacity 1s ease', 
         pointerEvents: showDesktop ? 'auto' : 'none' 
       }}>
-         {/* FIX IS HERE: We pass the 'onBack' prop! */}
          <VirtualDesktop startSlideshow={showDesktop} onBack={handleReturn} />
       </div>
 
