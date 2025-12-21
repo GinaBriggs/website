@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, FolderOpen, Mail, GripHorizontal, Brain } from 'lucide-react'; 
+import { User, FolderOpen, Mail, GripHorizontal, Brain, LogOut } from 'lucide-react'; 
 import TrainingSim from './TrainingSim'; 
-import DecisionBoundary from './DecisionBoundary';
+import AutoNav from './AutoNav';
 import FaceRecognition from './FaceRecognition';
 import ProjectDetail from './ProjectDetail';
 
-const VirtualDesktop = ({ startSlideshow }) => {
+const VirtualDesktop = ({ startSlideshow, onBack }) => {
   const [openWindows, setOpenWindows] = useState([]);
   const [activeWindow, setActiveWindow] = useState(null);
 
@@ -42,12 +42,13 @@ const VirtualDesktop = ({ startSlideshow }) => {
       
       // --- RESPONSIVE SIZE CALCULATION ---
       const isMobile = window.innerWidth < 768;
-      const isLargeApp = ['trainingsim', 'facerecodetails', 'facereco'].includes(appConfig.id);
+      const isLargeApp = ['trainingsim', 'autonav', 'facerecodetails', 'facereco'].includes(appConfig.id);
 
       const newWindow = {
         id: appConfig.id,
         title: appConfig.content.title,     
-        body: appConfig.content.body,       
+        body: appConfig.content.body,
+        footer: appConfig.content.footer, // Include footer if defined
         
         // Mobile: Fixed 90% Width / 80% Height, Centered.
         // Desktop: Dynamic size based on App Type.
@@ -124,14 +125,14 @@ const VirtualDesktop = ({ startSlideshow }) => {
     }
   };
 
-  const classifierAppConfig = {
-    id: 'decisionboundary',
-    label: 'Interactive Classifier',
+  const autoNavConfig = {
+    id: 'autonav',
+    label: 'AutoNav Vision',
     content: {
-      title: 'Teach a Neural Network',
+      title: 'Autonomous Vehicle Dashboard',
       body: (
-        <div className="w-full h-full bg-gray-900 overflow-hidden relative">
-          <DecisionBoundary />
+        <div className="w-full h-full bg-black overflow-hidden relative">
+          <AutoNav />
         </div>
       )
     }
@@ -183,7 +184,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
                   />
                 </div>
               </div>
-              {/* Text */}
               <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                 I’m Gina, a computer science student and aspiring deep learning engineer that's interested in building intelligent systems that solve everyday problems. My work sits at the intersection of software engineering, machine learning, and applied research.
               </p>
@@ -191,7 +191,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
 
             {/* --- PARAGRAPH 2: Picture RIGHT (flex-row-reverse) --- */}
             <div className="flex flex-col md:flex-row-reverse gap-6 items-center">
-              {/* Image Container */}
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
                    <img 
@@ -201,7 +200,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
                   />
                 </div>
               </div>
-              {/* Text */}
               <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                 I’m particularly focused on deep learning, large language models, and AI systems that combine technical foundations with practical impact. I loveee turning complex ideas into usable products, whether that’s through research driven projects, frontend interfaces like this one, or AI tools.
               </p>
@@ -209,7 +207,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
 
             {/* --- PARAGRAPH 3: Picture LEFT --- */}
             <div className="flex flex-col md:flex-row gap-6 items-center">
-              {/* Image Container */}
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
                    <img 
@@ -219,7 +216,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
                   />
                 </div>
               </div>
-              {/* Text */}
               <p className="text-gray-600 leading-relaxed text-sm md:text-base">
                 Beyond coding, I’m curious about how technology shapes decision making, the way we behave and the future of intelligence. I’m constantly learning, experimenting, and refining my skills to grow into a high impact engineer and researcher.
               </p>
@@ -266,17 +262,22 @@ const VirtualDesktop = ({ startSlideshow }) => {
               </button>
             </div>
 
-            {/* Project 3 - CLASSIFIER */}
+            {/* Project 3 - AUTONOMOUS DRIVING */}
             <div className="border-b border-gray-200 pb-4">
-              <h4 className="font-semibold text-gray-800 mb-2">Interactive Neural Classifier</h4>
-              <p className="text-gray-600 text-sm mb-2">
-                 Click to add data points and watch a tiny neural network learn to classify them in real time.
-              </p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">AutoNav Vision System</h4>
+                  <p className="text-gray-600 text-sm mb-3">
+                    A computer vision dashboard for self-driving cars. It detects vehicles, pedestrians, and calculates threat levels in real-time.
+                  </p>
+                </div>
+              </div>
+              
               <button 
-                onClick={() => openWindow(classifierAppConfig)}
-                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-sm text-sm font-medium"
+                onClick={() => openWindow(autoNavConfig)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
               >
-                Launch Playground
+                Launch Dashboard
               </button>
             </div>
 
@@ -330,8 +331,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
           <div className="space-y-4">
             <p className="text-gray-600">I'd love to hear from you! Feel free to reach out.</p>
             <div className="space-y-3">
-              
-              {/* 1. EMAIL LINK */}
               <a 
                 href="mailto:gina.captain-briggs@pau.edu.ng"
                 className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group cursor-pointer"
@@ -340,7 +339,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
                 <span className="text-gray-700 font-medium">Email</span>
               </a>
 
-              {/* 2. LINKEDIN LINK */}
               <a 
                 href="https://www.linkedin.com/in/ginacaptainbriggs" 
                 target="_blank" 
@@ -353,7 +351,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
                 <span className="text-gray-700 font-medium">Linkedin </span>
               </a>
 
-              {/* 3. GITHUB LINK */}
               <a 
                 href="https://github.com/GinaBriggs" 
                 target="_blank" 
@@ -365,7 +362,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
                 </svg>
                 <span className="text-gray-700 font-medium">GitHub</span>
               </a>
-
             </div>
           </div>
         )
@@ -376,24 +372,36 @@ const VirtualDesktop = ({ startSlideshow }) => {
   return (
     <div className="fixed inset-0 pointer-events-none z-20">
       
-    {/* BACKGROUND LAYER */}
-    <div className="absolute inset-0 -z-10 overflow-hidden bg-black">
-      <AnimatePresence mode="popLayout">
-        <motion.img
-          key={currentBgIndex}
-          src={backgroundImages[currentBgIndex]}
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
-          className="absolute inset-0 w-full h-full object-cover opacity-100" 
-        />
-      </AnimatePresence>
-      <div className="absolute inset-0 bg-black/20" />
-    </div>
+      {/* BACKGROUND LAYER */}
+      <div className="absolute inset-0 -z-10 overflow-hidden bg-black">
+        <AnimatePresence mode="popLayout">
+          <motion.img
+            key={currentBgIndex}
+            src={backgroundImages[currentBgIndex]}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute inset-0 w-full h-full object-cover opacity-100" 
+            alt="Desktop Wallpaper"
+          />
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
 
-    {/* --- RESPONSIVE ICONS CONTAINER --- */}
-      {/* Mobile: Row at the bottom. Desktop: Column at top-left. */}
+      {/* --- BACK / EXIT BUTTON --- */}
+      <div className="absolute top-6 right-6 z-50 pointer-events-auto">
+        <button
+          onClick={onBack}
+          aria-label="Exit Desktop"
+          className="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-red-500/20 text-white rounded-full backdrop-blur-md border border-white/30 transition-all hover:scale-105 group"
+        >
+          <LogOut className="w-4 h-4 group-hover:text-red-300 transition-colors" />
+          <span className="text-xs font-semibold uppercase tracking-wider group-hover:text-red-100 transition-colors">Exit</span>
+        </button>
+      </div>
+
+      {/* --- RESPONSIVE ICONS CONTAINER --- */}
       <div className="absolute 
         bottom-28 left-0 w-full flex flex-row justify-center gap-4 z-40 pointer-events-auto 
         md:top-8 md:left-8 md:w-auto md:flex-col md:justify-start md:gap-6 md:bottom-auto"
@@ -404,20 +412,18 @@ const VirtualDesktop = ({ startSlideshow }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => openWindow(icon)}
+            aria-label={`Open ${icon.label}`}
             className="flex flex-col items-center gap-2 group cursor-pointer"
           >
-            {/* Icon Box */}
             <div className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg group-hover:bg-white/30 transition-colors">
               <icon.icon className="w-6 h-6 md:w-8 md:h-8 text-white drop-shadow-lg" />
             </div>
-            {/* Label */}
             <span className="text-white text-xs md:text-sm font-medium drop-shadow-lg text-center max-w-[80px]">
               {icon.label}
             </span>
           </motion.button>
         ))}
       </div>
-
 
       {/* Render Windows */}
       <AnimatePresence>
@@ -445,11 +451,9 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
   const [initialDims, setInitialDims] = useState({ x: 0, y: 0, w: 0, h: 0 });
 
   const handleMouseDownDrag = (e) => {
-    // DISABLE DRAG ON MOBILE for better UX
-    if (window.innerWidth < 768) return;
-
+    if (window.innerWidth < 768) return; // Disable drag on mobile
     if (e.target.closest('.window-controls')) return;
-    e.preventDefault(); 
+    e.preventDefault();
     onBringToFront(window.id);
     setIsDragging(true);
     setStartPos({ x: e.clientX, y: e.clientY });
@@ -457,9 +461,7 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
   };
 
   const handleMouseDownResize = (e) => {
-    // DISABLE RESIZE ON MOBILE
-    if (window.innerWidth < 768) return;
-
+    if (window.innerWidth < 768) return; // Disable resize on mobile
     e.preventDefault();
     e.stopPropagation();
     onBringToFront(window.id);
@@ -508,9 +510,9 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
   return (
     <motion.div
       ref={windowRef}
-      initial={{ scale: 0.9, opacity: 1 }}
+      initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.9, opacity: 1 }}
+      exit={{ scale: 0.9, opacity: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className="absolute pointer-events-auto flex flex-col"
       style={{
@@ -521,6 +523,8 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
         zIndex: isActive ? 50 : 40,
       }}
       onMouseDown={() => onBringToFront(window.id)}
+      role="dialog"
+      aria-labelledby={`window-title-${window.id}`}
     >
       <div className="flex flex-col h-full bg-white/80 backdrop-blur-xl rounded-xl shadow-2xl border border-white/50 overflow-hidden relative">
         <div 
@@ -529,12 +533,12 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
         >
           <div className="flex items-center gap-2">
             <GripHorizontal className="w-4 h-4 text-gray-400" />
-            <h3 className="text-gray-700 font-semibold text-sm">{window.title}</h3>
+            <h3 id={`window-title-${window.id}`} className="text-gray-700 font-semibold text-sm">{window.title}</h3>
           </div>
           <div className="window-controls flex items-center gap-2">
-            {/* BIGGER CLOSE BUTTON FOR MOBILE */}
             <button
               onClick={(e) => { e.stopPropagation(); onClose(window.id); }}
+              aria-label="Close Window"
               className="w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center transition-all"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -543,14 +547,25 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
             </button>
           </div>
         </div>
-        <div className={`flex-1 overflow-auto ${['trainingsim', 'facereco', 'decisionboundary', 'facerecodetails'].includes(window.id) ? 'p-0' : 'p-6'}`}>
+        
+        {/* Main Content Area */}
+        <div className={`flex-1 overflow-auto ${['trainingsim', 'facereco', 'autonav', 'facerecodetails'].includes(window.id) ? 'p-0' : 'p-6'}`}>
           {window.body}
         </div>
+
+        {/* Sticky Footer (if defined in appConfig) */}
+        {window.footer && (
+          <div className="p-4 bg-white/50 border-t border-white/20 shrink-0 backdrop-blur-md">
+            {window.footer}
+          </div>
+        )}
         
         {/* Resize Handle (Hidden on Mobile) */}
         <div 
           className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize flex items-center justify-center z-50 hover:bg-gray-200/50 rounded-tl-lg transition-colors md:flex hidden"
           onMouseDown={handleMouseDownResize}
+          aria-label="Resize Window"
+          role="button"
         >
           <svg className="w-4 h-4 text-gray-400 -rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor">
              <path d="M21 21H12M21 21V12" strokeWidth="2" strokeLinecap="round"/>

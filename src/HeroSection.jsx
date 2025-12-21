@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { TypeAnimation } from 'react-type-animation';
 
 const HeroSection = () => {
   const [mounted, setMounted] = useState(false);
@@ -11,11 +12,8 @@ const HeroSection = () => {
   return (
     <div className="absolute inset-0 w-full h-full pointer-events-none z-10">
       
-      {/* LAYOUT FIX:
-         - Mobile: pt-6 (moves text very high up into the pink space).
-         - Desktop: items-center (center align), padding-left-20 
-      */}
-      <div className="w-full h-full flex flex-col justify-start pt-6 px-8 md:justify-center md:pt-0 md:pl-20 max-w-4xl">
+      {/* LAYOUT CONTAINER */}
+      <div className="w-full h-full flex flex-col justify-start pt-6 px-8 md:justify-start md:pt-20 md:pl-20 max-w-4xl">
         
         {/* Animated Headline */}
         <motion.div
@@ -24,49 +22,72 @@ const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-left"
         >
-          {/* TEXT SIZE FIX: 
-              - Mobile: text-3xl (smaller, fits one line).
-              - Desktop: text-7xl.
+          {/* TYPEWRITER HEADLINE 
+             - Changed "my name is" to "I'm" so it works with the cycling roles.
+             - The 'TypeAnimation' component now handles the gradient text.
           */}
           <h1 className="text-3xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight mb-2 md:mb-4">
-            Hi, my name is{' '}
-            <span className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent inline-block filter drop-shadow-sm">
-              Gina.
-            </span>
+            Hi, I'm{' '}
+            <TypeAnimation
+              sequence={[
+                'Gina.', // Text 1
+                3000, 
+                'a Deep Learning Engineer.', // Text 2
+                2000,
+                'building AI Systems.', // Text 3
+                2000,
+              ]}
+              wrapper="span"
+              speed={50}
+              repeat={Infinity}
+              // This class applies the Purple/Pink Gradient to the typing text
+              className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent inline-block filter drop-shadow-sm"
+            />
           </h1>
-          
-          {/* SUBTITLE FIX:
-              - Mobile: text-sm (smaller, less distracting).
-              - Desktop: text-xl.
-          */}
-          <p className="text-sm md:text-xl text-gray-600 font-light max-w-lg leading-relaxed">
-            I love building intelligent systems with deep learning.
-          </p>
+        
         </motion.div>
 
-        {/* INSTRUCTION TEXT:
-           - Kept 'hidden md:block' to ensure this only shows on desktop/laptops.
-           - Preserved the pulse animation.
-        */}
-        <div className="absolute bottom-10 right-10 hidden md:block">
+  
+            {/* --- ANIMATED CLICK INDICATOR (Desktop Only) --- */}
+        {/* POSITION FIX: 'left-1/2 -translate-x-1/2' centers it horizontally */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block">
             <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={mounted ? { opacity: 1, x: 0 } : {}}
+                initial={{ opacity: 0 }}
+                animate={mounted ? { opacity: 1 } : {}}
                 transition={{ duration: 0.8, delay: 1 }}
+                className="flex flex-col items-center gap-2 opacity-80 hover:opacity-100 transition-opacity"
             >
-                <motion.p
-                    className="text-sm text-gray-400 font-light text-right"
-                    animate={{ 
-                    opacity: [0.6, 1, 0.6],
-                    }}
-                    transition={{ 
-                    duration: 3,
+                {/* FLOATING ANIMATION WRAPPER: Moves the whole mouse Up/Down */}
+                <motion.div
+                  animate={{ y: [0, 12, 0] }}
+                  transition={{
+                    duration: 2,
                     repeat: Infinity,
-                    ease: "easeInOut"
-                    }}
+                    repeatType: "loop",
+                    ease: "easeInOut",
+                  }}
+                  className="flex flex-col items-center gap-2"
                 >
-                    Click anywhere to find out what I've been up to
-                </motion.p>
+                    {/* Mouse Icon Body */}
+                    <div className="relative w-7 h-11 border-2 border-white rounded-full flex justify-center pt-2 p-1 shadow-sm bg-white/10 backdrop-blur-sm">
+                      {/* The Clicker/Button Animation (Pulses) */}
+                      <motion.div
+                        className="w-1.5 h-2.5 bg-white rounded-full"
+                        animate={{
+                           scale: [1, 0.8, 1],   
+                           opacity: [1, 0.5, 1]  
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          repeatType: "loop",
+                          ease: "easeInOut",
+                        }}
+                      />
+                    </div>
+                    {/* Label */}
+                    <span className="text-white text-[10px] uppercase tracking-widest font-medium text-center block text-shadow-sm">Click Anywhere</span>
+                </motion.div>
             </motion.div>
         </div>
 

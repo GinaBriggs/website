@@ -6,13 +6,19 @@ import HeroSection from './HeroSection';
 import Watermark from './Watermark';
 
 export default function App() {
-  // 1. Loading State
-  const [isLoading, setIsLoading] = useState(true);
+  // 1. Loading States
+  const [isLoading, setIsLoading] = useState(true); // Initial Load (Shows Spinner)
+  const [isResetting, setIsResetting] = useState(false); // Reset Load (Silent Fade)
   
   // 2. Interaction States
   // 'isZooming' acts as the trigger: when true, Hero fades out, Spline zooms in.
   const [isZooming, setIsZooming] = useState(false);
   const [showDesktop, setShowDesktop] = useState(false);
+
+  // --- NEW: Reset Key ---
+  // We use this to force the Spline scene to reload from scratch when exiting.
+  // This ensures the camera resets to the room view instead of getting stuck zoomed in.
+  const [resetKey, setResetKey] = useState(0);
 
   // Your Spline URL (Cached once)
   const [splineUrl] = useState(`https://prod.spline.design/cBPYSyt5K-z2YSet/scene.splinecode?t=${Date.now()}`);
@@ -21,7 +27,7 @@ export default function App() {
   // Triggers the slow, beautiful 4s zoom
   const handleSceneClick = () => {
     // Ignore on mobile (screen < 768px) so they don't accidentally trigger the slow zoom by tapping background
-    if (isZooming || isLoading || window.innerWidth < 768) return; 
+    if (isZooming || isLoading || isResetting || window.innerWidth < 768) return; 
 
     // This triggers the transition: Hero fades out, Camera zooms
     setIsZooming(true);
@@ -35,7 +41,7 @@ export default function App() {
   // --- 2. MOBILE HANDLER (Button Click) ---
   // Triggers a fast 1.5s fade (skips the zoom to avoid lag)
   const handleMobileEnter = () => {
-    if (isZooming || isLoading) return;
+    if (isZooming || isLoading || isResetting) return;
 
     setIsZooming(true);
     // Faster timeout! We don't wait for the camera zoom because the button can't trigger it.
@@ -44,9 +50,23 @@ export default function App() {
     }, 1500); 
   };
 
+  // --- 3. RETURN HANDLER (Back Button) ---
+  // This reverses the process: Fades out desktop -> Resets Zoom -> Reloads Scene
+  const handleReturn = () => {
+    setShowDesktop(false); // 1. Fade out UI first
+    
+    setTimeout(() => {
+      setIsZooming(false);           // 2. Reset Zoom state
+      setResetKey(prev => prev + 1); // 3. FORCE RESET the 3D Scene (Changes the key, forcing React to reload it)
+      setIsResetting(true);          // 4. Trigger Silent Fade (No Spinner)
+    }, 500); // Short delay for smooth transition
+  };
+
   const handleSplineLoad = () => {
+    // This runs when Spline is ready. It handles both Initial Load AND Resets.
     setTimeout(() => {
       setIsLoading(false);
+      setIsResetting(false); // Fade scene back in smoothly
     }, 1000);
   };
 
@@ -60,7 +80,8 @@ export default function App() {
     }}>
       
       {/* --------------------------------------------------
-          LAYER 0: The Loading Screen
+          LAYER 0: The Loading Screen (SPINNER)
+          FIX: Only shows on 'isLoading' (First visit), NOT on 'isResetting'
          -------------------------------------------------- */}
       <div style={{
         position: 'absolute',
@@ -68,7 +89,7 @@ export default function App() {
         left: 0,
         width: '100%',
         height: '100%',
-        zIndex: 50, 
+        zIndex: 100, // FIX: Increased to 100 to ensure it covers watermark 
         backgroundColor: '#f0f0f0', 
         display: 'flex',
         alignItems: 'center',
@@ -76,7 +97,7 @@ export default function App() {
         flexDirection: 'column',
         gap: '1rem',
         transition: 'opacity 0.5s ease, visibility 0.5s ease',
-        opacity: isLoading ? 1 : 0,
+        opacity: isLoading ? 1 : 0, 
         visibility: isLoading ? 'visible' : 'hidden', 
         pointerEvents: 'none' 
       }}>
@@ -101,12 +122,17 @@ export default function App() {
           // CRITICAL FIX: Also disable on mobile so tapping doesn't rotate camera
           pointerEvents: window.innerWidth < 768 ? 'none' : (isZooming || showDesktop ? 'none' : 'auto'),
 
-          cursor: (!isLoading && !isZooming) ? 'pointer' : 'default',
+          cursor: (!isLoading && !isZooming && !isResetting) ? 'pointer' : 'default',
+          
           transition: 'opacity 1s ease',
-          opacity: isLoading ? 0 : 1 
+          // FIX: Opacity is 0 if Loading OR Resetting. 
+          // This creates a smooth fade-out/fade-in effect without the white spinner screen.
+          opacity: (isLoading || isResetting) ? 0 : 1 
         }}
       >
+        {/* FIX: Added key={resetKey} to force full reload on exit */}
         <Spline 
+          key={resetKey}
           scene={splineUrl} 
           onLoad={handleSplineLoad}
           // Extra safety: Stop Spline from listening on mobile
@@ -114,9 +140,22 @@ export default function App() {
         />
       </div>
 
-      {/* LAYER 1: The Watermark (PERMANENT) */}
-      {/* FIX: Removed '!showDesktop' check so it stays visible to cover the Spline logo on all screens */}
-      {!isLoading && <Watermark />}
+      {/* LAYER 1: Watermark (PERMANENT) */}
+      <div 
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 40, 
+          // FIX 1: pointerEvents 'none' allows clicks to pass through to the scene
+          pointerEvents: 'none', 
+          transition: 'opacity 0.5s ease',
+          // FIX 2: opacity is always 1, so it NEVER disappears
+          opacity: 1
+        }}
+      >
+        {/* Note: The Watermark component itself handles its own clickability */}
+        <Watermark />
+      </div>
 
       {/* LAYER 1.5: THE INVISIBLE SHIELD (The Fix) */}
       {/* This blocks touches on the 3D scene so mobile users can scroll the desktop windows */}
@@ -144,13 +183,14 @@ export default function App() {
         zIndex: 10, // Increased Z-Index to ensure button is clickable
         pointerEvents: 'none', 
         transition: 'opacity 0.5s ease', 
-        opacity: (isLoading || isZooming) ? 0 : 1 
+        // Hide Hero if Loading, Zooming, OR Resetting
+        opacity: (isLoading || isZooming || isResetting) ? 0 : 1 
       }}>
          {/* Render the Hero Text */}
          <HeroSection />
 
          {/* --- ENTER BUTTON (MOBILE ONLY) --- */}
-         {!isLoading && !isZooming && (
+         {!isLoading && !isZooming && !isResetting && (
            <div className="absolute bottom-40 left-0 w-full flex justify-center z-[60] md:hidden pointer-events-auto">
              <button
                onClick={handleMobileEnter}
@@ -177,7 +217,8 @@ export default function App() {
         transition: 'opacity 1s ease', 
         pointerEvents: showDesktop ? 'auto' : 'none' 
       }}>
-         <VirtualDesktop startSlideshow={showDesktop} />
+         {/* FIX IS HERE: We pass the 'onBack' prop! */}
+         <VirtualDesktop startSlideshow={showDesktop} onBack={handleReturn} />
       </div>
 
     </div>
