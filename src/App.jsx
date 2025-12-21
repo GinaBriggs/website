@@ -149,14 +149,13 @@ export default function App() {
          {/* Render the Hero Text */}
          <HeroSection />
 
-         {/* --- THE MOBILE FIX: A REAL BUTTON --- */}
-         {/* 'md:hidden' ensures this only shows on mobile devices */}
+         {/* --- ENTER BUTTON (MOBILE ONLY) --- */}
          {!isLoading && !isZooming && (
-           // FIX: Moved to z-[60] to be above watermark. Moved to bottom-40 to be higher up.
            <div className="absolute bottom-40 left-0 w-full flex justify-center z-[60] md:hidden pointer-events-auto">
              <button
                onClick={handleMobileEnter}
-               className="bg-black/90 text-white px-8 py-3 rounded-full font-semibold backdrop-blur-md border border-white/20 shadow-2xl active:scale-95 transition-transform"
+               // STYLE FIX: Changed to Glassmorphism (White/40 with Blur) instead of harsh Black
+               className="bg-white/40 text-gray-900 px-8 py-3 rounded-full font-semibold backdrop-blur-md border border-white/50 shadow-xl active:scale-95 transition-transform"
              >
                Enter Portfolio
              </button>

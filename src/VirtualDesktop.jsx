@@ -395,7 +395,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
     {/* --- RESPONSIVE ICONS CONTAINER --- */}
       {/* Mobile: Row at the bottom. Desktop: Column at top-left. */}
       <div className="absolute 
-        bottom-8 left-0 w-full flex flex-row justify-center gap-4 z-40 pointer-events-auto 
+        bottom-28 left-0 w-full flex flex-row justify-center gap-4 z-40 pointer-events-auto 
         md:top-8 md:left-8 md:w-auto md:flex-col md:justify-start md:gap-6 md:bottom-auto"
       >
         {desktopIcons.map((icon) => (
