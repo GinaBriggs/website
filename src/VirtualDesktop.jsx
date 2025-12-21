@@ -369,7 +369,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
     <div className="fixed inset-0 pointer-events-none z-20">
       
     {/* BACKGROUND LAYER */}
-    <div className="absolute inset-0 -z-10 overflow-hidden bg-black/10">
+    <div className="absolute inset-0 -z-10 overflow-hidden bg-black">
       <AnimatePresence mode="popLayout">
         <motion.img
           key={currentBgIndex}
