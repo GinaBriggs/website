@@ -97,9 +97,8 @@ export default function App() {
           height: '100%', 
           zIndex: 1,
           
-          // CRITICAL FIX: 
-          // On Mobile (<768px): Disable pointer events so tapping doesn't rotate camera.
-          // On Desktop: Allow clicking (unless zooming/desktop open).
+          // Disable pointer events on the wrapper if we are zooming/desktop is open
+          // CRITICAL FIX: Also disable on mobile so tapping doesn't rotate camera
           pointerEvents: window.innerWidth < 768 ? 'none' : (isZooming || showDesktop ? 'none' : 'auto'),
 
           cursor: (!isLoading && !isZooming) ? 'pointer' : 'default',
@@ -116,11 +115,22 @@ export default function App() {
       </div>
 
       {/* LAYER 1: The Watermark (PERMANENT) */}
-      {!isLoading && !showDesktop && <Watermark />}
+      {/* FIX: Removed '!showDesktop' check so it stays visible to cover the Spline logo on all screens */}
+      {!isLoading && <Watermark />}
 
-      {/* LAYER 1.5: Mobile Background Blocker */}
-      {/* Prevents "drag" gestures on mobile by covering the scene with a transparent div */}
+      {/* LAYER 1.5: THE INVISIBLE SHIELD (The Fix) */}
+      {/* This blocks touches on the 3D scene so mobile users can scroll the desktop windows */}
+      {/* Also prevents 'drag' gestures on mobile by covering the scene with a transparent div */}
       <div className="absolute inset-0 z-[2] md:hidden pointer-events-auto bg-transparent" />
+      
+      {(isZooming || showDesktop) && (
+        <div 
+          className="absolute top-0 left-0 w-full h-full z-[5]" 
+          style={{
+            touchAction: 'auto', 
+          }}
+        />
+      )}
 
       {/* --------------------------------------------------
           LAYER 2: Hero Section + ENTER BUTTON
@@ -142,9 +152,9 @@ export default function App() {
          {/* --- THE MOBILE FIX: A REAL BUTTON --- */}
          {/* 'md:hidden' ensures this only shows on mobile devices */}
          {!isLoading && !isZooming && (
-           <div className="absolute bottom-20 left-0 w-full flex justify-center z-50 md:hidden pointer-events-auto">
+           // FIX: Changed bottom-20 to bottom-32 so it sits ABOVE the watermark on mobile
+           <div className="absolute bottom-32 left-0 w-full flex justify-center z-50 md:hidden pointer-events-auto">
              <button
-               // Use the fast mobile handler here
                onClick={handleMobileEnter}
                className="bg-black/80 text-white px-8 py-3 rounded-full font-semibold backdrop-blur-md border border-white/20 shadow-xl hover:scale-105 transition-transform active:scale-95"
              >

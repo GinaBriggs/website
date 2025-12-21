@@ -39,16 +39,25 @@ const VirtualDesktop = ({ startSlideshow }) => {
   const openWindow = (appConfig) => {
     // Check if window is already open
     if (!openWindows.find(w => w.id === appConfig.id)) {
+      
+      // --- RESPONSIVE SIZE CALCULATION ---
+      const isMobile = window.innerWidth < 768;
+      const isLargeApp = ['trainingsim', 'facerecodetails', 'facereco'].includes(appConfig.id);
+
       const newWindow = {
         id: appConfig.id,
         title: appConfig.content.title,     
         body: appConfig.content.body,       
-        x: 50 + openWindows.length * 30,
-        y: 50 + openWindows.length * 30,
-        // Custom sizes for specific apps
-        width: (appConfig.id === 'trainingsim' || appConfig.id === 'facerecodetails' || appConfig.id === 'facereco') ? 1000 : 500,
-        height: (appConfig.id === 'trainingsim' || appConfig.id === 'facerecodetails' || appConfig.id === 'facereco') ? 700 : 500,
+        
+        // Mobile: Fixed 90% Width / 80% Height, Centered.
+        // Desktop: Dynamic size based on App Type.
+        width: isMobile ? window.innerWidth * 0.90 : (isLargeApp ? 1000 : 500),
+        height: isMobile ? window.innerHeight * 0.80 : (isLargeApp ? 700 : 500),
+        
+        x: isMobile ? window.innerWidth * 0.05 : 50 + openWindows.length * 30,
+        y: isMobile ? window.innerHeight * 0.10 : 50 + openWindows.length * 30,
       };
+
       setOpenWindows([...openWindows, newWindow]);
       setActiveWindow(appConfig.id);
     } else {
@@ -76,7 +85,6 @@ const VirtualDesktop = ({ startSlideshow }) => {
 
   // --- 4. APP DATA & CONFIGURATIONS ---
 
-  // *** IMPORTANT: Define Data Object BEFORE using it in Config ***
   const faceRecoData = {
     title: "Biometric Security System",
     tagline: "A Python-based facial recognition pipeline achieving 98% accuracy on local datasets using Euclidean distance mapping.",
@@ -381,6 +389,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
           className="absolute inset-0 w-full h-full object-cover opacity-100" 
         />
       </AnimatePresence>
+      <div className="absolute inset-0 bg-black/20" />
     </div>
 
     {/* --- RESPONSIVE ICONS CONTAINER --- */}
@@ -436,6 +445,9 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
   const [initialDims, setInitialDims] = useState({ x: 0, y: 0, w: 0, h: 0 });
 
   const handleMouseDownDrag = (e) => {
+    // DISABLE DRAG ON MOBILE for better UX
+    if (window.innerWidth < 768) return;
+
     if (e.target.closest('.window-controls')) return;
     e.preventDefault(); 
     onBringToFront(window.id);
@@ -445,6 +457,9 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
   };
 
   const handleMouseDownResize = (e) => {
+    // DISABLE RESIZE ON MOBILE
+    if (window.innerWidth < 768) return;
+
     e.preventDefault();
     e.stopPropagation();
     onBringToFront(window.id);
@@ -517,11 +532,12 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
             <h3 className="text-gray-700 font-semibold text-sm">{window.title}</h3>
           </div>
           <div className="window-controls flex items-center gap-2">
+            {/* BIGGER CLOSE BUTTON FOR MOBILE */}
             <button
               onClick={(e) => { e.stopPropagation(); onClose(window.id); }}
-              className="w-6 h-6 rounded-full bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center transition-all"
+              className="w-8 h-8 rounded-full bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center transition-all"
             >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -530,8 +546,10 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
         <div className={`flex-1 overflow-auto ${['trainingsim', 'facereco', 'decisionboundary', 'facerecodetails'].includes(window.id) ? 'p-0' : 'p-6'}`}>
           {window.body}
         </div>
+        
+        {/* Resize Handle (Hidden on Mobile) */}
         <div 
-          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize flex items-center justify-center z-50 hover:bg-gray-200/50 rounded-tl-lg transition-colors"
+          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize flex items-center justify-center z-50 hover:bg-gray-200/50 rounded-tl-lg transition-colors md:flex hidden"
           onMouseDown={handleMouseDownResize}
         >
           <svg className="w-4 h-4 text-gray-400 -rotate-90" viewBox="0 0 24 24" fill="none" stroke="currentColor">
