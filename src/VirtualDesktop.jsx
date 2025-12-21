@@ -1,10 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, FolderOpen, Mail, GripHorizontal, Brain, LogOut } from 'lucide-react'; 
-import TrainingSim from './TrainingSim'; 
-import AutoNav from './AutoNav';
-import FaceRecognition from './FaceRecognition';
-import ProjectDetail from './ProjectDetail';
+import { User, FolderOpen, Mail, GripHorizontal, Brain, LogOut, Loader2 } from 'lucide-react'; 
+
+// --- OPTIMIZATION: LAZY LOAD HEAVY APPS ---
+// These components will now only load when the window is actually opened.
+const TrainingSim = lazy(() => import('./TrainingSim'));
+const AutoNav = lazy(() => import('./AutoNav'));
+const FaceRecognition = lazy(() => import('./FaceRecognition'));
+const ProjectDetail = lazy(() => import('./ProjectDetail'));
+
+// Simple Loading Component for the Windows
+const WindowLoader = () => (
+  <div className="w-full h-full flex items-center justify-center bg-gray-50">
+    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+    <span className="ml-3 text-gray-500 font-medium">Loading App...</span>
+  </div>
+);
 
 const VirtualDesktop = ({ startSlideshow, onBack }) => {
   const [openWindows, setOpenWindows] = useState([]);
@@ -37,10 +48,8 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
   // --- 3. WINDOW MANAGEMENT LOGIC ---
 
   const openWindow = (appConfig) => {
-    // Check if window is already open
     if (!openWindows.find(w => w.id === appConfig.id)) {
       
-      // --- RESPONSIVE SIZE CALCULATION ---
       const isMobile = window.innerWidth < 768;
       const isLargeApp = ['trainingsim', 'autonav', 'facerecodetails', 'facereco'].includes(appConfig.id);
 
@@ -48,10 +57,8 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
         id: appConfig.id,
         title: appConfig.content.title,     
         body: appConfig.content.body,
-        footer: appConfig.content.footer, // Include footer if defined
+        footer: appConfig.content.footer, 
         
-        // Mobile: Fixed 90% Width / 80% Height, Centered.
-        // Desktop: Dynamic size based on App Type.
         width: isMobile ? window.innerWidth * 0.90 : (isLargeApp ? 1000 : 500),
         height: isMobile ? window.innerHeight * 0.80 : (isLargeApp ? 700 : 500),
         
@@ -62,7 +69,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
       setOpenWindows([...openWindows, newWindow]);
       setActiveWindow(appConfig.id);
     } else {
-      // If open, just bring to front
       setActiveWindow(appConfig.id);
     }
   };
@@ -111,6 +117,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
   };
 
   // --- APP DEFINITIONS (Hidden Apps) ---
+  // FIX: Wrapped bodies in Suspense so they load asynchronously
 
   const simAppConfig = {
     id: 'trainingsim',
@@ -119,7 +126,9 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
       title: 'Training Dynamics Visualization',
       body: (
         <div className="w-full h-full bg-black overflow-hidden relative">
-          <TrainingSim />
+          <Suspense fallback={<WindowLoader />}>
+            <TrainingSim />
+          </Suspense>
         </div>
       )
     }
@@ -132,7 +141,9 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
       title: 'Autonomous Vehicle Dashboard',
       body: (
         <div className="w-full h-full bg-black overflow-hidden relative">
-          <AutoNav />
+          <Suspense fallback={<WindowLoader />}>
+            <AutoNav />
+          </Suspense>
         </div>
       )
     }
@@ -145,7 +156,9 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
       title: 'Project Source Code',
       body: (
         <div className="w-full h-full bg-[#1e1e1e] overflow-hidden relative">
-          <FaceRecognition />
+          <Suspense fallback={<WindowLoader />}>
+            <FaceRecognition />
+          </Suspense>
         </div>
       )
     }
@@ -157,7 +170,9 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
     content: {
       title: 'Project: Biometric Security',
       body: (
-        <ProjectDetail project={faceRecoData} onBack={() => closeWindow('facerecodetails')} />
+        <Suspense fallback={<WindowLoader />}>
+          <ProjectDetail project={faceRecoData} onBack={() => closeWindow('facerecodetails')} />
+        </Suspense>
       )
     }
   };
@@ -172,8 +187,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
         title: 'About Me',
         body: (
           <div className="space-y-8">
-            
-            {/* --- PARAGRAPH 1: Picture LEFT --- */}
             <div className="flex flex-col md:flex-row gap-6 items-center">
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
@@ -181,6 +194,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                     src="/pictures/IMG_2261.JPG" 
                     alt="Gina 1" 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                    loading="lazy" 
                   />
                 </div>
               </div>
@@ -189,7 +203,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
               </p>
             </div>
 
-            {/* --- PARAGRAPH 2: Picture RIGHT (flex-row-reverse) --- */}
             <div className="flex flex-col md:flex-row-reverse gap-6 items-center">
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
@@ -197,6 +210,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                     src="/pictures/IMG_2269.JPG" 
                     alt="Gina 2" 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -205,7 +219,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
               </p>
             </div>
 
-            {/* --- PARAGRAPH 3: Picture LEFT --- */}
             <div className="flex flex-col md:flex-row gap-6 items-center">
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
@@ -213,6 +226,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                     src="/pictures/IMG_2265.JPG" 
                     alt="Gina 3" 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
+                    loading="lazy"
                   />
                 </div>
               </div>
@@ -451,7 +465,7 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
   const [initialDims, setInitialDims] = useState({ x: 0, y: 0, w: 0, h: 0 });
 
   const handleMouseDownDrag = (e) => {
-    if (window.innerWidth < 768) return; // Disable drag on mobile
+    if (window.innerWidth < 768) return; 
     if (e.target.closest('.window-controls')) return;
     e.preventDefault();
     onBringToFront(window.id);
@@ -461,7 +475,7 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
   };
 
   const handleMouseDownResize = (e) => {
-    if (window.innerWidth < 768) return; // Disable resize on mobile
+    if (window.innerWidth < 768) return; 
     e.preventDefault();
     e.stopPropagation();
     onBringToFront(window.id);
