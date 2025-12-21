@@ -369,7 +369,7 @@ const VirtualDesktop = ({ startSlideshow }) => {
     <div className="fixed inset-0 pointer-events-none z-20">
       
     {/* BACKGROUND LAYER */}
-    <div className="fixed inset-0 pointer-events-none z-30">
+    <div className="absolute inset-0 -z-10 overflow-hidden bg-black/10">
       <AnimatePresence mode="popLayout">
         <motion.img
           key={currentBgIndex}
@@ -383,26 +383,32 @@ const VirtualDesktop = ({ startSlideshow }) => {
       </AnimatePresence>
     </div>
 
-    {/* Desktop Icons */}
-      <div className="absolute top-8 left-8 flex flex-col gap-6 pointer-events-auto z-40">
+    {/* --- RESPONSIVE ICONS CONTAINER --- */}
+      {/* Mobile: Row at the bottom. Desktop: Column at top-left. */}
+      <div className="absolute 
+        bottom-8 left-0 w-full flex flex-row justify-center gap-4 z-40 pointer-events-auto 
+        md:top-8 md:left-8 md:w-auto md:flex-col md:justify-start md:gap-6 md:bottom-auto"
+      >
         {desktopIcons.map((icon) => (
           <motion.button
             key={icon.id}
-            id={`btn-${icon.id}`} 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => openWindow(icon)}
             className="flex flex-col items-center gap-2 group cursor-pointer"
           >
-            <div className="w-16 h-16 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg group-hover:bg-white/30 transition-colors">
-              <icon.icon className="w-8 h-8 text-white drop-shadow-lg" />
+            {/* Icon Box */}
+            <div className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg group-hover:bg-white/30 transition-colors">
+              <icon.icon className="w-6 h-6 md:w-8 md:h-8 text-white drop-shadow-lg" />
             </div>
-            <span className="text-white text-sm font-medium drop-shadow-lg text-center max-w-[80px]">
+            {/* Label */}
+            <span className="text-white text-xs md:text-sm font-medium drop-shadow-lg text-center max-w-[80px]">
               {icon.label}
             </span>
           </motion.button>
         ))}
       </div>
+
 
       {/* Render Windows */}
       <AnimatePresence>
@@ -487,9 +493,9 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
   return (
     <motion.div
       ref={windowRef}
-      initial={{ scale: 0.9, opacity: 0 }}
+      initial={{ scale: 0.9, opacity: 1 }}
       animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.9, opacity: 0 }}
+      exit={{ scale: 0.9, opacity: 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       className="absolute pointer-events-auto flex flex-col"
       style={{
