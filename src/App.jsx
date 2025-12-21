@@ -23,7 +23,7 @@ export default function App() {
     // This triggers the transition: Hero fades out, Camera zooms
     setIsZooming(true);
 
-    // Wait 6 seconds for animation, then show desktop
+    // Wait 4 seconds for animation, then show desktop
     setTimeout(() => {
       setShowDesktop(true);
     }, 4000);
@@ -68,12 +68,11 @@ export default function App() {
         <Loader2 className="w-12 h-12 text-purple-500 animate-spin" />
       </div>
 
-      
-
       {/* --------------------------------------------------
           LAYER 1: The 3D Scene (Clickable Layer)
          -------------------------------------------------- */}
       <div 
+        // We keep this for desktop users who might click the background
         onClick={handleSceneClick} 
         style={{ 
           position: 'absolute', 
@@ -82,7 +81,8 @@ export default function App() {
           width: '100%', 
           height: '100%', 
           zIndex: 1,
-
+          
+          // Disable pointer events on the wrapper if we are zooming/desktop is open
           pointerEvents: (isZooming || showDesktop) ? 'none' : 'auto',
 
           cursor: (!isLoading && !isZooming) ? 'pointer' : 'default',
@@ -93,7 +93,7 @@ export default function App() {
         <Spline 
           scene={splineUrl} 
           onLoad={handleSplineLoad}
-          // This tells Spline: "If I am on mobile and the desktop is open, STOP listening."
+          // This tells Spline: "If I am on mobile and the desktop is open, STOP listening to touches."
           style={{
             pointerEvents: (showDesktop && window.innerWidth < 768) ? 'none' : 'auto'
           }}
@@ -101,26 +101,21 @@ export default function App() {
       </div>
 
       {/* LAYER 1: The Watermark (PERMANENT) */}
-      {/* We put this here so it sits on top of Spline but is NOT affected by the 'isZooming' fade out below */}
-      {!isLoading && <Watermark />}
+      {!isLoading && !showDesktop && <Watermark />}
 
       {/* LAYER 1.5: THE INVISIBLE SHIELD (The Fix) */}
-      {/* This layer appears only when zooming or on desktop. 
-          It sits at zIndex 5 (above Spline Z-1, below Desktop Z-10).
-          It catches all mouse events so they don't hit the 3D scene. */}
+      {/* This blocks touches on the 3D scene so mobile users can scroll the desktop windows */}
       {(isZooming || showDesktop) && (
         <div 
-          className="absolute top-0 left-0 w-full h-full z-[5]" // Tailwind for z-index 5
+          className="absolute top-0 left-0 w-full h-full z-[5]" 
           style={{
-            // This is the key: On mobile, this div covers the 3D scene completely
-            // capturing all touches so they don't spin the camera.
             touchAction: 'auto', 
           }}
         />
       )}
 
       {/* --------------------------------------------------
-          LAYER 2: Hero Section (Replaces Old Text)
+          LAYER 2: Hero Section + ENTER BUTTON
          -------------------------------------------------- */}
       <div style={{ 
         position: 'absolute', 
@@ -128,14 +123,26 @@ export default function App() {
         left: 0, 
         width: '100%', 
         height: '100%', 
-        zIndex: 2, 
-        pointerEvents: 'none', // Allows clicks to pass through to the 3D scene
+        zIndex: 10, // Increased Z-Index to ensure button is clickable
+        pointerEvents: 'none', 
         transition: 'opacity 0.5s ease', 
-        // Hide Hero Section when loading OR when zooming starts
         opacity: (isLoading || isZooming) ? 0 : 1 
       }}>
-         {/* Render the Hero Component */}
+         {/* Render the Hero Text */}
          <HeroSection />
+
+         {/* --- THE MOBILE FIX: A REAL BUTTON --- */}
+         {/* This ensures mobile users can click "Enter" without rotating the camera */}
+         {!isLoading && !isZooming && (
+           <div className="absolute bottom-20 left-0 w-full flex justify-center pointer-events-auto">
+             <button
+               onClick={handleSceneClick}
+               className="bg-black/80 text-white px-8 py-3 rounded-full font-semibold backdrop-blur-md border border-white/20 shadow-xl hover:scale-105 transition-transform active:scale-95"
+             >
+               Enter Portfolio
+             </button>
+           </div>
+         )}
       </div>
 
       {/* --------------------------------------------------
@@ -147,7 +154,7 @@ export default function App() {
         left: 0, 
         width: '100%', 
         height: '100%', 
-        zIndex: 10,
+        zIndex: 20,
         opacity: showDesktop ? 1 : 0, 
         transition: 'opacity 1s ease', 
         pointerEvents: showDesktop ? 'auto' : 'none' 
