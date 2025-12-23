@@ -324,7 +324,10 @@ const TrainingSim = () => {
 
             </div>
 
-      
+            {/* Footer */}
+            <div style={{ padding: '20px', borderTop: '1px solid #333', textAlign: 'right' }}>
+            </div>
+                <p>2025</p>
           </div>
         </div>
       )}
