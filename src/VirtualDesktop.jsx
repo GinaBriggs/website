@@ -63,7 +63,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
         height: isMobile ? window.innerHeight * 0.80 : (isLargeApp ? 800 : 500),
         
         x: isMobile ? window.innerWidth * 0.05 : 50 + openWindows.length * 30,
-        y: isMobile ? window.innerHeight * 0.10 : 50 + openWindows.length * 30,
+        y: isMobile ? window.innerHeight * 0.20 : 50 + openWindows.length * 30,
       };
 
       setOpenWindows([...openWindows, newWindow]);
