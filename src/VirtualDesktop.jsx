@@ -60,7 +60,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
         footer: appConfig.content.footer, 
         
         width: isMobile ? window.innerWidth * 0.90 : (isLargeApp ? 1000 : 500),
-        height: isMobile ? window.innerHeight * 0.80 : (isLargeApp ? 800 : 500),
+        height: isMobile ? window.innerHeight * 0.80 : (isLargeApp ? 700 : 500),
         
         x: isMobile ? window.innerWidth * 0.05 : 50 + openWindows.length * 30,
         y: isMobile ? window.innerHeight * 0.10 : 50 + openWindows.length * 30,

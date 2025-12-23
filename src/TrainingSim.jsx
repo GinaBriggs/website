@@ -304,10 +304,6 @@ const TrainingSim = () => {
                 They started as random noise. Over months of training (trillions of adjustments), they "converged" into the smart assistants you use today.
               </p>
 
-            </div>
-
-            {/* Footer */}
-            <div style={{ padding: '20px', borderTop: '1px solid #333', textAlign: 'right' }}>
               <button 
                 onClick={() => setShowModal(false)}
                 style={{
@@ -323,6 +319,11 @@ const TrainingSim = () => {
               >
                 Okay, I'll try the slider!
               </button>
+
+            </div>
+
+            {/* Footer */}
+            <div style={{ padding: '20px', borderTop: '1px solid #333', textAlign: 'right' }}>
             </div>
 
           </div>
