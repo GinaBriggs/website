@@ -6,41 +6,179 @@ const FaceRecognition = () => {
 
   // Your Python code string
   const pythonCode = `
-import face_recognition
+from faceRecognition import faceRecognizer
 import cv2
 import os
-import glob
-import numpy as np
+import time
 
-class FaceRecognizer:
-    def __init__(self):
-        self.known_face_encodings = []
-        self.known_names = []
-        self.frame_resizing = 0.25
+DATASET_PATH = "dataset" 
+facesDetected = []
 
-    def detect_known_faces(self, frame):
-        # 1. Resize for speed (0.25x)
-        small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-        rgb_small_frame = cv2.cvtColor(small_frame, cv2.COLOR_BGR2RGB)
+def startSystem():
+    print("\n--- Group 2 Facial Recognition System ---")
+    # Updated Menu
+    print("1: Register New Face (Snapshot)")
+    print("2: LIVE Webcam Recognition (New!)") 
+    print("3: Test Static Images")
+    print("4: Exit")
+    
+    try:
+        userType = int(input("Selection: "))
+    except ValueError:
+        print("Invalid input.")
+        startSystem()
+        return
 
-        # 2. Find Faces & Encodings
-        face_locs = face_recognition.face_locations(rgb_small_frame)
-        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locs)
+    if userType == 1:
+        dataCollection()
+        startSystem()
+    elif userType == 2:
+        realTimeRecognition() 
+        startSystem()
+    elif userType == 3:
+        testing()
+        startSystem()
+    elif userType == 4:
+        exit()
+    else:
+        print("Invalid Input!\n")
+        startSystem()
 
-        names = []
-        for encoding in face_encodings:
-            # 3. Compare with known faces (Euclidean Distance)
-            matches = face_recognition.compare_faces(self.known_face_encodings, encoding)
-            face_distances = face_recognition.face_distance(self.known_face_encodings, encoding)
+def dataCollection():
+    imageCap = cv2.VideoCapture(0)
+    # Use a robust path for the XML file
+    faceDetection = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+    label = input("Enter Username: ").strip()
+    if not label:
+        print("Invalid Username!")
+        return
+
+    # FIXED: Use the global DATASET_PATH
+    if not os.path.exists(DATASET_PATH):
+        os.makedirs(DATASET_PATH)
+
+    # Use os.path.join for Windows/Mac compatibility
+    imagePath = os.path.join(DATASET_PATH, f"{label}.jpg")
+
+    print(f"Collecting image for {label}. Please look into the camera.")
+    time.sleep(2) # Short pause to get ready
+
+    ret, frame = imageCap.read()
+    if not ret:
+        print("Error: Could not capture image.")
+        return
+
+    # Detect faces
+    faces = faceDetection.detectMultiScale(frame, 1.3, 5)
+
+    if len(faces) == 0:
+        print("No face detected. Try again with better lighting.")
+        imageCap.release()
+        cv2.destroyAllWindows()
+        return    
+    else:
+        for x, y, w, h in faces:
+            # Draw rectangle (optional visual)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 0), 3)
+            cv2.imshow('Captured Face', frame)
             
-            best_match = np.argmin(face_distances)
-            name = "Unknown"
-            if matches[best_match]:
-                name = self.known_names[best_match]
+            # Save the file to the DATASET folder
+            cv2.imwrite(imagePath, frame[y:y + h, x:x + w]) 
+            print(f"Success! Image saved to: {imagePath}")
             
-            names.append(name)
-        
-        return face_locs, names
+            facesDetected.append(imagePath)
+            
+            print("Press any key to close the camera window...")
+            cv2.waitKey(0)
+            imageCap.release()
+            cv2.destroyAllWindows()
+            
+            faceVerification()
+            return
+
+def realTimeRecognition():
+    print("\n--- Starting Live Recognition (Press 'q' to exit) ---")
+    
+    # 1. Load the database ONCE before the camera starts
+    faceRec = faceRecognizer()
+    dataset_path = "dataset" # Make sure this folder exists and has images!
+    
+    if not os.path.exists(dataset_path):
+        print(f"Error: '{dataset_path}' folder not found. Please register a face first.")
+        return
+
+    faceRec.load_encoding_images(dataset_path)
+
+    # 2. Start the Webcam
+    cap = cv2.VideoCapture(0)
+    
+    if not cap.isOpened():
+        print("Error: Could not access the camera.")
+        return
+
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+
+        # 3. Use the function already written in faceRecognition.py
+        # It returns the locations (coordinates) and names of found faces
+        face_locations, face_names = faceRec.detect_known_faces(frame)
+
+        # 4. Draw boxes and names on the video
+        for (y1, x2, y2, x1), name in zip(face_locations, face_names):
+            # Draw the box
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 200, 0), 2)
+            
+            # Draw the name tag
+            cv2.rectangle(frame, (x1, y2 - 35), (x2, y2), (0, 200, 0), cv2.FILLED)
+            cv2.putText(frame, name, (x1 + 6, y2 - 6), cv2.FONT_HERSHEY_DUPLEX, 0.8, (255, 255, 255), 1)
+
+        cv2.imshow('Live Face Recognition', frame)
+
+        # Press 'q' on the keyboard to exit the loop
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+    
+def faceVerification():
+    print("\n--- Verifying ---")
+    faceRec = faceRecognizer() 
+    
+  
+    faceRec.load_encoding_images(DATASET_PATH)
+
+    # Check the faces we just detected
+    for image_path in facesDetected:
+        print(f"Checking image: {image_path}")
+        faceRec.compare_faces(image_path)
+
+def testing():
+    print("\n--- Testing Mode ---")
+    faceRec = faceRecognizer() 
+    faceRec.load_encoding_images(DATASET_PATH)
+
+    folder_path = "testImages"
+    if not os.path.exists(folder_path):
+        print(f"Folder '{folder_path}' not found. Please create it and add photos.")
+        return
+
+    # List all files
+    files_only = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+
+    if not files_only:
+        print("No images found in testImages folder.")
+
+    for file_name in files_only:
+        full_path = os.path.join(folder_path, file_name)
+        print(f"Testing: {file_name}")
+        faceRec.compare_faces(full_path)
+
+if __name__ == "__main__":
+    startSystem()
 `;
 
   return (

@@ -32,7 +32,7 @@ const HeroSection = () => {
               sequence={[
                 'Gina.', // Text 1
                 3000, 
-                'a Deep Learning Engineer.', // Text 2
+                'a CS student.', // Text 2
                 2000,
                 'building AI Systems.', // Text 3
                 2000,

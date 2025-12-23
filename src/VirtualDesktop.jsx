@@ -60,7 +60,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
         footer: appConfig.content.footer, 
         
         width: isMobile ? window.innerWidth * 0.90 : (isLargeApp ? 1000 : 500),
-        height: isMobile ? window.innerHeight * 0.80 : (isLargeApp ? 700 : 500),
+        height: isMobile ? window.innerHeight * 0.80 : (isLargeApp ? 800 : 500),
         
         x: isMobile ? window.innerWidth * 0.05 : 50 + openWindows.length * 30,
         y: isMobile ? window.innerHeight * 0.10 : 50 + openWindows.length * 30,
@@ -94,22 +94,22 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
 
   const faceRecoData = {
     title: "Biometric Security System",
-    tagline: "A Python-based facial recognition pipeline achieving 98% accuracy on local datasets using Euclidean distance mapping.",
+    tagline: "A Python based facial recognition pipeline achieving 98% accuracy on local datasets using Euclidean distance mapping.",
     category: "Computer Vision",
-    date: "Fall 2024",
-    problem: "Traditional security systems rely on keycards or passwords, which can be stolen. I needed to build a touchless, spoof-proof identity verification system that could run on standard hardware without expensive cloud APIs.",
+    date: "2024 Group Project",
+    problem: "Traditional security systems rely on keycards or passwords, which can be stolen. I needed to build a touchless identity verification system that could run on standard hardware without expensive cloud APIs.",
     features: [
-      { title: "Real-time Detection", desc: "Processes video feeds at 30fps using optimized HOG (Histogram of Oriented Gradients) algorithms." },
-      { title: "128-Point Encoding", desc: "Maps unique facial features to a 128-dimensional vector space for high-precision comparison." },
-      { title: "Local Processing", desc: "Privacy-first architecture. No biometric data is ever sent to the cloud." },
-      { title: "Dynamic Resizing", desc: "Implements adaptive frame scaling (0.25x) to maintain performance on lower-end CPUs." }
+      { title: "Real time Detection", desc: "Processes video feeds at 30fps using optimized HOG (Histogram of Oriented Gradients) algorithms." },
+      { title: "128-Point Encoding", desc: "Maps unique facial features to a 128-dimensional vector space for high precision comparison." },
+      { title: "Local Processing", desc: "Privacy first architecture. No biometric data is ever sent to the cloud." },
+      { title: "Dynamic Resizing", desc: "Implements adaptive frame scaling (0.25x) to maintain performance on lower end CPUs." }
     ],
     tech: ["Python 3.9", "OpenCV", "dlib", "NumPy", "Face_Recognition"],
     screenshots: [
       "./pictures/Screenshot.png", 
       "./pictures/Screenshot0.png"
     ],
-    learned: "I learned how to optimize matrix operations using NumPy to handle real-time video data. I also gained a deep understanding of the trade offs between HOG and CNN face detectors which is balancing accuracy vs. speed for real world deployment.",
+    learned: "I learned how to optimize matrix operations using NumPy to handle real time video data. I also gained a deep understanding of the trade offs between HOG and CNN face detectors which is balancing accuracy vs. speed for real world deployment.",
     links: {
       github: "https://github.com/AweleChizim/projects/tree/main/Face%20Recognition%20System%20Group%202", 
       demo: null 
@@ -254,47 +254,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
               <p className="text-gray-600 text-sm">Interactive portfolio with Three.js and React</p>
             </div>
 
-            {/* Project 2 - THE SIMULATOR LAUNCHER */}
-            <div className="border-b border-gray-200 pb-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-1">Training Dynamics Simulator</h4>
-                  <p className="text-gray-600 text-sm mb-3">
-                    A visual exploration of how neural networks learn, built with Three.js.
-                    Visualizes high-dimensional manifold optimization.
-                  </p>
-                </div>
-                <Brain className="w-10 h-10 text-gray-300 shrink-0 ml-4" />
-              </div>
-              
-              <button 
-                onClick={() => openWindow(simAppConfig)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
-              >
-                <Brain className="w-4 h-4" />
-                Launch Simulator
-              </button>
-            </div>
-
-            {/* Project 3 - AUTONOMOUS DRIVING */}
-            <div className="border-b border-gray-200 pb-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-1">AutoNav Vision System</h4>
-                  <p className="text-gray-600 text-sm mb-3">
-                    A computer vision dashboard for self-driving cars. It detects vehicles, pedestrians, and calculates threat levels in real-time.
-                  </p>
-                </div>
-              </div>
-              
-              <button 
-                onClick={() => openWindow(autoNavConfig)}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
-              >
-                Launch Dashboard
-              </button>
-            </div>
-
             {/* Project 4 - FACE RECOGNITION */}
             <div className="border-b border-gray-200 pb-4">
               <div className="flex items-start justify-between">
@@ -330,6 +289,32 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                 </button>
               </div>
             </div>
+
+            {/* Project 2 - THE SIMULATOR LAUNCHER */}
+            <div className="border-b border-gray-200 pb-4">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">Training Dynamics Simulator</h4>
+                  <p className="text-gray-600 text-sm mb-3">
+                    A visual exploration of how neural networks learn, built with Three.js.
+                    Visualizes high-dimensional manifold optimization.
+                  </p>
+                </div>
+                <Brain className="w-10 h-10 text-gray-300 shrink-0 ml-4" />
+              </div>
+              
+              <button 
+                onClick={() => openWindow(simAppConfig)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm text-sm font-medium"
+              >
+                <Brain className="w-4 h-4" />
+                Launch Simulator
+              </button>
+            </div>
+
+          
+
+            
 
           </div>
         )
