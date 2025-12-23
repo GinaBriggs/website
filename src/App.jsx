@@ -1,4 +1,5 @@
 import React, { useState, lazy, Suspense } from 'react';
+
 // FIX: Lazy load the heavy 3D library so the page loads instantly
 const Spline = lazy(() => import('@splinetool/react-spline')); 
 import { Loader2 } from 'lucide-react'; 

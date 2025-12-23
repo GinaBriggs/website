@@ -561,7 +561,7 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
         
         {/* Resize Handle (Hidden on Mobile) */}
         <div 
-          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize flex items-center justify-center z-50 hover:bg-gray-200/50 rounded-tl-lg transition-colors md:flex hidden"
+          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize items-center justify-center z-50 hover:bg-gray-200/50 rounded-tl-lg transition-colors md:flex hidden"
           onMouseDown={handleMouseDownResize}
           aria-label="Resize Window"
           role="button"

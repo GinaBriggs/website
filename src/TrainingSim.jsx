@@ -285,7 +285,7 @@ const TrainingSim = () => {
               </p>
 
               <h3 style={{ color: '#00ffff', marginTop: '5px' }}>3. Your Turn: Try the Controls</h3>
-              <ul style={{ background: '#222', padding: '15px 30px', borderRadius: '8px' }}>
+              <ul style={{ background: '#222', padding: '5px 10px', borderRadius: '8px' }}>
                 <li style={{ marginBottom: '5px' }}>
                   <strong>Learning Speed:</strong> This is how fast the child moves the bricks. 
                   <br/><em>Try dragging it to 2.0 (Max).</em> The bricks will fly around wildly! If you learn too fast, you make mistakes.
@@ -324,10 +324,7 @@ const TrainingSim = () => {
 
             </div>
 
-            {/* Footer */}
-            <div style={{ padding: '20px', borderTop: '1px solid #333', textAlign: 'right' }}>
-            </div>
-
+      
           </div>
         </div>
       )}
