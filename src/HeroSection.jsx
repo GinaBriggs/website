@@ -41,7 +41,7 @@ const HeroSection = () => {
               speed={50}
               repeat={Infinity}
               // This class applies the Purple/Pink Gradient to the typing text
-              className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent inline-block filter drop-shadow-sm"
+              className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent inline-block filter drop-shadow-sm pb-2"
             />
           </h1>
         
