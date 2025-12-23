@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import Spline from '@splinetool/react-spline';
+import React, { useState, lazy, Suspense } from 'react';
+// FIX: Lazy load the heavy 3D library so the page loads instantly
+const Spline = lazy(() => import('@splinetool/react-spline')); 
 import { Loader2 } from 'lucide-react'; 
 import VirtualDesktop from './VirtualDesktop';
 import HeroSection from './HeroSection'; 
@@ -73,10 +74,11 @@ export default function App() {
 
   const handleSplineLoad = () => {
     // This runs when Spline is ready. It handles both Initial Load AND Resets.
+    // FIX: Reduced artificial delay from 1000ms to 500ms for faster feel
     setTimeout(() => {
       setIsLoading(false);
       setIsResetting(false); // Fade scene back in smoothly
-    }, 1000);
+    }, 500);
   };
 
   return (
@@ -138,12 +140,15 @@ export default function App() {
           opacity: (isLoading || isResetting) ? 0 : 1 
         }}
       >
-        <Spline 
-          key={resetKey}
-          scene={splineUrl} 
-          onLoad={handleSplineLoad}
-          style={{ pointerEvents: window.innerWidth < 768 ? 'none' : 'auto' }}
-        />
+        {/* FIX: Suspense handles the lazy loading of the heavy 3D engine */}
+        <Suspense fallback={null}>
+          <Spline 
+            key={resetKey}
+            scene={splineUrl} 
+            onLoad={handleSplineLoad}
+            style={{ pointerEvents: window.innerWidth < 768 ? 'none' : 'auto' }}
+          />
+        </Suspense>
       </div>
 
       {/* LAYER 1: Watermark (PERMANENT) */}

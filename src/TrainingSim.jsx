@@ -271,13 +271,13 @@ const TrainingSim = () => {
                 Imagine you are trying to teach a child to sort Lego bricks by color.
               </p>
 
-              <h3 style={{ color: '#ff0055', marginTop: '20px' }}>1. The Chaos (Epoch 0)</h3>
+              <h3 style={{ color: '#ff0055', marginTop: '10px' }}>1. The Chaos (Epoch 0)</h3>
               <p>
                 At the very beginning, the child (the AI) knows nothing. They just throw the Legos everywhere. 
                 That is what you see when the simulation starts: <strong>Red Chaos</strong>. In AI, we call this "Random Initialization."
               </p>
 
-              <h3 style={{ color: '#00aaff', marginTop: '20px' }}>2. The Lesson (The Process)</h3>
+              <h3 style={{ color: '#00aaff', marginTop: '10px' }}>2. The Lesson (The Process)</h3>
               <p>
                 As time passes, you (the teacher) tell them "No, red goes here, blue goes there." 
                 The AI slowly moves the pieces into piles. This movement is called <strong>Gradient Descent</strong>.
@@ -300,7 +300,7 @@ const TrainingSim = () => {
                 </li>
               </ul>
 
-              <h3 style={{ marginTop: '20px' }}>Why does this matter?</h3>
+              <h3 style={{ marginTop: '0px' }}>Why does this matter?</h3>
               <p>
                 This isn't just a pretty animation. This is exactly how <strong>Gemini, ChatGPT, and Claude</strong> were built. 
                 They started as random noise. Over months of training (trillions of adjustments), they "converged" into the smart assistants you use today.
