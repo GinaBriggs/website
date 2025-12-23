@@ -1,14 +1,14 @@
 import React, { useState, lazy, Suspense } from 'react';
-// FIX: Lazy load the heavy 3D library so the page loads instantly
+// Lazy load the heavy 3D library so the page loads instantly
 const Spline = lazy(() => import('@splinetool/react-spline')); 
-import { Loader2 } from 'lucide-react'; 
 import VirtualDesktop from './VirtualDesktop';
 import HeroSection from './HeroSection'; 
 import Watermark from './Watermark';
+import LoadingScreen from './LoadingScreen'; // IMPORT THE NEW LOADER
 
 export default function App() {
   // 1. Loading States
-  const [isLoading, setIsLoading] = useState(true); // Initial Load (Shows Spinner)
+  const [isLoading, setIsLoading] = useState(true); // Initial Load (Shows Heart)
   const [isResetting, setIsResetting] = useState(false); // Reset Load (Silent Fade)
   
   // 2. Interaction States
@@ -67,14 +67,13 @@ export default function App() {
         // DESKTOP: We must reload the scene to reset the Camera Zoom.
         setIsZooming(false);           
         setResetKey(prev => prev + 1); // Force React to re-render Spline
-        setIsResetting(true);          // Trigger Silent Fade
+        setIsResetting(true);          // Trigger Silent Fade (No Heart Spinner)
       }
     }, 500); // Short delay for smooth transition
   };
 
   const handleSplineLoad = () => {
     // This runs when Spline is ready. It handles both Initial Load AND Resets.
-    // FIX: Reduced artificial delay from 1000ms to 500ms for faster feel
     setTimeout(() => {
       setIsLoading(false);
       setIsResetting(false); // Fade scene back in smoothly
@@ -91,29 +90,10 @@ export default function App() {
     }}>
       
       {/* --------------------------------------------------
-          LAYER 0: The Loading Screen (SPINNER)
-          Only shows on 'isLoading' (First visit), NOT on 'isResetting'
+          LAYER 0: The New Heart Loading Screen
+          We pass 'isLoading' so it only shows on the first visit
          -------------------------------------------------- */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 100, 
-        backgroundColor: '#f0f0f0', 
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        gap: '1rem',
-        transition: 'opacity 0.5s ease, visibility 0.5s ease',
-        opacity: isLoading ? 1 : 0, 
-        visibility: isLoading ? 'visible' : 'hidden', 
-        pointerEvents: 'none' 
-      }}>
-        <Loader2 className="w-12 h-12 text-purple-500 animate-spin" />
-      </div>
+      <LoadingScreen isLoading={isLoading} />
 
       {/* --------------------------------------------------
           LAYER 1: The 3D Scene (Clickable Layer)

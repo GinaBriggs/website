@@ -61,7 +61,7 @@ const LoadingScreen = ({ isLoading }) => {
                   width="24" 
                   height="24"
                   fill="#A855F7" // The Vibrant Purple
-                  animate={{ y: -5 }} // Move up to cover the heart
+                  animate={{ y: -28 }} // Move up to cover the heart
                   transition={{
                     duration: 2,
                     ease: "easeInOut",

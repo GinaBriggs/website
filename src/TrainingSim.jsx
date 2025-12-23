@@ -271,26 +271,26 @@ const TrainingSim = () => {
                 Imagine you are trying to teach a child to sort Lego bricks by color.
               </p>
 
-              <h3 style={{ color: '#ff0055', marginTop: '10px' }}>1. The Chaos (Epoch 0)</h3>
+              <h3 style={{ color: '#ff0055', marginTop: '5px' }}>1. The Chaos (Epoch 0)</h3>
               <p>
                 At the very beginning, the child (the AI) knows nothing. They just throw the Legos everywhere. 
                 That is what you see when the simulation starts: <strong>Red Chaos</strong>. In AI, we call this "Random Initialization."
               </p>
 
-              <h3 style={{ color: '#00aaff', marginTop: '10px' }}>2. The Lesson (The Process)</h3>
+              <h3 style={{ color: '#00aaff', marginTop: '5px' }}>2. The Lesson (The Process)</h3>
               <p>
                 As time passes, you (the teacher) tell them "No, red goes here, blue goes there." 
                 The AI slowly moves the pieces into piles. This movement is called <strong>Gradient Descent</strong>.
                 Eventually, the pieces form neat, separate piles. This is <strong>Convergence</strong>.
               </p>
 
-              <h3 style={{ color: '#00ffff', marginTop: '20px' }}>3. Your Turn: Try the Controls</h3>
+              <h3 style={{ color: '#00ffff', marginTop: '5px' }}>3. Your Turn: Try the Controls</h3>
               <ul style={{ background: '#222', padding: '15px 30px', borderRadius: '8px' }}>
-                <li style={{ marginBottom: '10px' }}>
+                <li style={{ marginBottom: '5px' }}>
                   <strong>Learning Speed:</strong> This is how fast the child moves the bricks. 
                   <br/><em>Try dragging it to 2.0 (Max).</em> The bricks will fly around wildly! If you learn too fast, you make mistakes.
                 </li>
-                <li style={{ marginBottom: '10px' }}>
+                <li style={{ marginBottom: '5px' }}>
                   <strong>Distractions (Noise):</strong> This is how shaky their hands are. 
                   <br/><em>Try dragging it up.</em> A little shaking is actually good because it stops them from getting stuck in the wrong spot!
                 </li>
@@ -312,7 +312,7 @@ const TrainingSim = () => {
                   background: '#00ffff',
                   color: '#000',
                   border: 'none',
-                  padding: '10px 25px',
+                  padding: '5px 15px',
                   borderRadius: '5px',
                   cursor: 'pointer',
                   fontWeight: 'bold',
