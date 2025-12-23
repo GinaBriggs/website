@@ -262,7 +262,9 @@ const TrainingSim = () => {
             <div style={{ 
               padding: '20px', 
               overflowY: 'auto', 
-              lineHeight: '1.6' 
+              lineHeight: '1.6', 
+              flex: 1,       
+              minHeight: 0   
             }}>
               
               <p style={{ fontSize: '1.1rem', marginTop: 0 }}>
