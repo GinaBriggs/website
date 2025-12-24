@@ -257,20 +257,54 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
         body: (
           <div className="space-y-6">
             
-            {/* Project 1 */}
+            {/* Project 1 - 3D PORTFOLIO (Updated to match others) */}
             <div className="border-b border-gray-200 pb-4">
-              <h4 className="font-semibold text-gray-800 mb-2">3D Portfolio Website</h4>
-              <p className="text-gray-600 text-sm">Interactive portfolio with Three.js and React</p>
+              <div className="flex items-start justify-between">
+                <div>
+                  <h4 className="font-semibold text-gray-800 mb-1">3D Portfolio Website</h4>
+                  <p className="text-gray-600 text-sm mb-2">
+                    The interactive desktop environment you are using right now. Built with Three.js/Spline and React.
+                  </p>
+                  {/* ADDED: Tech Stack Tags */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {['React', 'Three.js', 'Spline', 'Tailwind'].map(tag => (
+                      <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {/* Visual Icon */}
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center shrink-0 ml-4">
+                   <FolderOpen className="w-5 h-5 text-purple-600" />
+                </div>
+              </div>
+              <a 
+                href="https://github.com/GinaBriggs" 
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 text-xs font-medium text-blue-600 hover:underline"
+              >
+                View Source on GitHub &rarr;
+              </a>
             </div>
 
-            {/* Project 4 - FACE RECOGNITION */}
+            {/* Project 2 - FACE RECOGNITION (Added Tech Stack) */}
             <div className="border-b border-gray-200 pb-4">
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-1">Face Recognition System</h4>
-                  <p className="text-gray-600 text-sm mb-3">
-                    A Python-based biometric security system using OpenCV and Deep Learning embeddings.
+                  <p className="text-gray-600 text-sm mb-2">
+                    A Python based biometric security system using OpenCV and Deep Learning embeddings.
                   </p>
+                  {/* ADDED: Tech Stack Tags */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {['Python', 'OpenCV', 'NumPy', 'Dlib'].map(tag => (
+                      <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 ml-4">
                   <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -299,15 +333,22 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
               </div>
             </div>
 
-            {/* Project 2 - THE SIMULATOR LAUNCHER */}
+            {/* Project 3 - THE SIMULATOR LAUNCHER (Added Tech Stack) */}
             <div className="border-b border-gray-200 pb-4">
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-1">Training Dynamics Simulator</h4>
-                  <p className="text-gray-600 text-sm mb-3">
-                    A visual exploration of how neural networks learn, built with Three.js.
-                    Visualizes high-dimensional manifold optimization.
+                  <p className="text-gray-600 text-sm mb-2">
+                    A visual exploration of how neural networks learn, visualizing high dimensional manifold optimization.
                   </p>
+                  {/* ADDED: Tech Stack Tags */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {['Three.js', 'React', 'WebGL', 'Math'].map(tag => (
+                      <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
                 </div>
                 <Brain className="w-10 h-10 text-gray-300 shrink-0 ml-4" />
               </div>
@@ -321,7 +362,8 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
               </button>
             </div>
 
-          
+            
+
 
             
 
