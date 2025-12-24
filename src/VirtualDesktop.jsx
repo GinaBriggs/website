@@ -280,7 +280,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                 </div>
               </div>
               <a 
-                href="https://github.com/GinaBriggs" 
+                href="https://github.com/GinaBriggs/website" 
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center gap-2 text-xs font-medium text-blue-600 hover:underline"
