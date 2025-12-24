@@ -25,15 +25,24 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
   
   const backgroundImages = [
-    "./pictures/Wallpaper1.jpg",
-    "./pictures/Wallpaper2.jpg",
-    "./pictures/Wallpaper3.jpg",
-    "./pictures/Wallpaper4.jpg", 
-    "./pictures/Wallpaper5.jpg",
-    "./pictures/Wallpaper6.jpg",
-    "./pictures/Wallpaper7.jpg",
-    "./pictures/Wallpaper8.jpg",
+    "./pictures/Wallpaper1.webp",
+    "./pictures/Wallpaper2.webp",
+    "./pictures/Wallpaper3.webp",
+    "./pictures/Wallpaper4.webp", 
+    "./pictures/Wallpaper5.webp",
+    "./pictures/Wallpaper6.webp",
+    "./pictures/Wallpaper7.webp",
+    "./pictures/Wallpaper8.webp",
   ];
+
+  // --- FIX: PRELOAD IMAGES ---
+  // This forces the browser to download all images in the background immediately
+  useEffect(() => {
+    backgroundImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   // --- 2. SLIDESHOW TIMER ---
   useEffect(() => {
@@ -106,8 +115,8 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
     ],
     tech: ["Python 3.9", "OpenCV", "dlib", "NumPy", "Face_Recognition"],
     screenshots: [
-      "./pictures/Screenshot.png", 
-      "./pictures/Screenshot0.png"
+      "./pictures/Screenshot.webp", 
+      "./pictures/Screenshot0.webp"
     ],
     learned: "I learned how to optimize matrix operations using NumPy to handle real time video data. I also gained a deep understanding of the trade offs between HOG and CNN face detectors which is balancing accuracy vs. speed for real world deployment.",
     links: {
@@ -191,7 +200,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
                   <img 
-                    src="/pictures/IMG_2261.JPG" 
+                    src="/pictures/IMG_2261.webp" 
                     alt="Gina 1" 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                     loading="lazy" 
@@ -199,7 +208,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                 </div>
               </div>
               <p className="text-gray-600 leading-relaxed text-sm md:text-base">
-                I’m Gina, a computer science student and aspiring deep learning engineer that's interested in building intelligent systems that solve everyday problems. My work sits at the intersection of software engineering, machine learning, and applied research.
+                I’m Gina, a computer science student and aspiring deep learning engineer who's interested in building intelligent systems that solve everyday problems. My work sits at the intersection of software engineering, machine learning, and applied research.
               </p>
             </div>
 
@@ -207,7 +216,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
                    <img 
-                    src="/pictures/IMG_2269.JPG" 
+                    src="/pictures/IMG_2269.webp" 
                     alt="Gina 2" 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
                     loading="lazy"
@@ -223,7 +232,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
               <div className="w-full md:w-32 shrink-0">
                 <div className="aspect-square rounded-lg bg-gray-200 overflow-hidden shadow-sm">
                    <img 
-                    src="/pictures/IMG_2265.JPG" 
+                    src="/pictures/IMG_2265.webp" 
                     alt="Gina 3" 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
                     loading="lazy"
@@ -383,6 +392,9 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
             transition={{ duration: 1.5, ease: "easeInOut" }}
             className="absolute inset-0 w-full h-full object-cover opacity-100" 
             alt="Desktop Wallpaper"
+            // FIX: Added optimized loading attributes for performance
+            loading="eager"
+            decoding="async"
           />
         </AnimatePresence>
         <div className="absolute inset-0 bg-black/20" />
@@ -561,7 +573,7 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
         
         {/* Resize Handle (Hidden on Mobile) */}
         <div 
-          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize items-center justify-center z-50 hover:bg-gray-200/50 rounded-tl-lg transition-colors md:flex hidden"
+          className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize flex items-center justify-center z-50 hover:bg-gray-200/50 rounded-tl-lg transition-colors md:flex hidden"
           onMouseDown={handleMouseDownResize}
           aria-label="Resize Window"
           role="button"
