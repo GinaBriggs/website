@@ -1,15 +1,11 @@
 import React, { useState, useRef, useEffect, Suspense, lazy } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { User, FolderOpen, Mail, GripHorizontal, Brain, LogOut, Loader2 } from 'lucide-react'; 
+import { AnimatePresence, motion } from 'framer-motion';
+import { User, FolderOpen, Mail, GripHorizontal, Brain, LogOut, Loader2 } from 'lucide-react';
 
-// --- OPTIMIZATION: LAZY LOAD HEAVY APPS ---
-// These components will now only load when the window is actually opened.
 const TrainingSim = lazy(() => import('./TrainingSim'));
-const AutoNav = lazy(() => import('./AutoNav'));
 const FaceRecognition = lazy(() => import('./FaceRecognition'));
 const ProjectDetail = lazy(() => import('./ProjectDetail'));
 
-// Simple Loading Component for the Windows
 const WindowLoader = () => (
   <div className="w-full h-full flex items-center justify-center bg-gray-50">
     <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
@@ -20,10 +16,8 @@ const WindowLoader = () => (
 const VirtualDesktop = ({ startSlideshow, onBack }) => {
   const [openWindows, setOpenWindows] = useState([]);
   const [activeWindow, setActiveWindow] = useState(null);
-
-  // --- 1. BACKGROUND CONFIGURATION ---
   const [currentBgIndex, setCurrentBgIndex] = useState(0);
-  
+
   const backgroundImages = [
     "./pictures/Wallpaper1.webp",
     "./pictures/Wallpaper2.webp",
@@ -35,8 +29,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
     "./pictures/Wallpaper8.webp",
   ];
 
-  // --- FIX: PRELOAD IMAGES ---
-  // This forces the browser to download all images in the background immediately
   useEffect(() => {
     backgroundImages.forEach((src) => {
       const img = new Image();
@@ -44,7 +36,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
     });
   }, []);
 
-  // --- 2. SLIDESHOW TIMER ---
   useEffect(() => {
     if (!startSlideshow) return;
     const timer = setInterval(() => {
@@ -54,23 +45,18 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
     return () => clearInterval(timer);
   }, [backgroundImages.length, startSlideshow]);
 
-  // --- 3. WINDOW MANAGEMENT LOGIC ---
-
   const openWindow = (appConfig) => {
     if (!openWindows.find(w => w.id === appConfig.id)) {
-      
       const isMobile = window.innerWidth < 768;
-      const isLargeApp = ['trainingsim', 'autonav', 'facerecodetails', 'facereco'].includes(appConfig.id);
+      const isLargeApp = ['trainingsim', 'facerecodetails', 'facereco'].includes(appConfig.id);
 
       const newWindow = {
         id: appConfig.id,
         title: appConfig.content.title,     
         body: appConfig.content.body,
         footer: appConfig.content.footer, 
-        
         width: isMobile ? window.innerWidth * 0.90 : (isLargeApp ? 1000 : 500),
         height: isMobile ? window.innerHeight * 0.80 : (isLargeApp ? 700 : 500),
-        
         x: isMobile ? window.innerWidth * 0.05 : 50 + openWindows.length * 30,
         y: isMobile ? window.innerHeight * 0.10 : 50 + openWindows.length * 30,
       };
@@ -99,8 +85,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
     ));
   };
 
-  // --- 4. APP DATA & CONFIGURATIONS ---
-
   const faceRecoData = {
     title: "Biometric Security System",
     tagline: "A Python based facial recognition pipeline achieving 98% accuracy on local datasets using Euclidean distance mapping.",
@@ -125,9 +109,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
     }
   };
 
-  // --- APP DEFINITIONS (Hidden Apps) ---
-  // FIX: Wrapped bodies in Suspense so they load asynchronously
-
   const simAppConfig = {
     id: 'trainingsim',
     label: 'AI Training Sim',
@@ -143,20 +124,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
     }
   };
 
-  const autoNavConfig = {
-    id: 'autonav',
-    label: 'AutoNav Vision',
-    content: {
-      title: 'Autonomous Vehicle Dashboard',
-      body: (
-        <div className="w-full h-full bg-black overflow-hidden relative">
-          <Suspense fallback={<WindowLoader />}>
-            <AutoNav />
-          </Suspense>
-        </div>
-      )
-    }
-  };
 
   const faceRecoAppConfig = {
     id: 'facereco',
@@ -186,7 +153,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
     }
   };
 
-  // --- 5. DESKTOP ICONS (Main Menu) ---
   const desktopIcons = [
     {
       id: 'about',
@@ -208,7 +174,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                 </div>
               </div>
               <p className="text-gray-600 leading-relaxed text-sm md:text-base">
-                I’m Gina, a computer science student and aspiring deep learning engineer who's interested in building intelligent systems that solve everyday problems. My work sits at the intersection of software engineering, machine learning, and applied research.
+                I’m Gina, a computer science student and aspiring deep learning engineer who is interested in building intelligent systems that solve everyday problems. My work sits at the intersection of software engineering, machine learning, and applied research.
               </p>
             </div>
 
@@ -224,7 +190,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                 </div>
               </div>
               <p className="text-gray-600 leading-relaxed text-sm md:text-base">
-                I’m particularly focused on deep learning, large language models, and AI systems that combine technical foundations with practical impact. I loveee turning complex ideas into usable products, whether that’s through research driven projects, frontend interfaces like this one, or AI tools.
+                I’m particularly focused on deep learning, large language models, and AI systems that combine technical foundations with practical impact. I love turning complex ideas into usable products, whether that’s through research driven projects, frontend interfaces like this one, or AI tools.
               </p>
             </div>
 
@@ -243,7 +209,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                 Beyond coding, I’m curious about how technology shapes decision making, the way we behave and the future of intelligence. I’m constantly learning, experimenting, and refining my skills to grow into a high impact engineer and researcher.
               </p>
             </div>
-
           </div>
         )
       }
@@ -256,55 +221,18 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
         title: 'My Projects',
         body: (
           <div className="space-y-6">
-            
-            {/* Project 1 - 3D PORTFOLIO (Updated to match others) */}
             <div className="border-b border-gray-200 pb-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="font-semibold text-gray-800 mb-1">3D Portfolio Website</h4>
-                  <p className="text-gray-600 text-sm mb-2">
-                    The interactive desktop environment you are using right now. Built with Three.js/Spline and React.
-                  </p>
-                  {/* ADDED: Tech Stack Tags */}
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {['React', 'Three.js', 'Spline', 'Tailwind'].map(tag => (
-                      <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {/* Visual Icon */}
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center shrink-0 ml-4">
-                   <FolderOpen className="w-5 h-5 text-purple-600" />
-                </div>
-              </div>
-              <a 
-                href="https://github.com/GinaBriggs/website" 
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-xs font-medium text-blue-600 hover:underline"
-              >
-                View Source on GitHub &rarr;
-              </a>
+              <h4 className="font-semibold text-gray-800 mb-2">3D Portfolio Website</h4>
+              <p className="text-gray-600 text-sm">Interactive portfolio with Three.js and React</p>
             </div>
 
-            {/* Project 2 - FACE RECOGNITION (Added Tech Stack) */}
             <div className="border-b border-gray-200 pb-4">
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-1">Face Recognition System</h4>
-                  <p className="text-gray-600 text-sm mb-2">
-                    A Python based biometric security system using OpenCV and Deep Learning embeddings.
+                  <p className="text-gray-600 text-sm mb-3">
+                    A Python-based biometric security system using OpenCV and Deep Learning embeddings.
                   </p>
-                  {/* ADDED: Tech Stack Tags */}
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {['Python', 'OpenCV', 'NumPy', 'Dlib'].map(tag => (
-                      <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
                 </div>
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 ml-4">
                   <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -333,22 +261,14 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
               </div>
             </div>
 
-            {/* Project 3 - THE SIMULATOR LAUNCHER (Added Tech Stack) */}
             <div className="border-b border-gray-200 pb-4">
               <div className="flex items-start justify-between">
                 <div>
                   <h4 className="font-semibold text-gray-800 mb-1">Training Dynamics Simulator</h4>
-                  <p className="text-gray-600 text-sm mb-2">
-                    A visual exploration of how neural networks learn, visualizing high dimensional manifold optimization.
+                  <p className="text-gray-600 text-sm mb-3">
+                    A visual exploration of how neural networks learn, built with Three.js.
+                    Visualizes high-dimensional manifold optimization.
                   </p>
-                  {/* ADDED: Tech Stack Tags */}
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {['Three.js', 'React', 'WebGL', 'Math'].map(tag => (
-                      <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded border border-gray-200">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
                 </div>
                 <Brain className="w-10 h-10 text-gray-300 shrink-0 ml-4" />
               </div>
@@ -361,12 +281,8 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
                 Launch Simulator
               </button>
             </div>
-
             
-
-
             
-
           </div>
         )
       }
@@ -420,9 +336,8 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
   ];
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-20">
+    <main className="fixed inset-0 pointer-events-none z-20">
       
-      {/* BACKGROUND LAYER */}
       <div className="absolute inset-0 -z-10 overflow-hidden bg-black">
         <AnimatePresence mode="popLayout">
           <motion.img
@@ -434,7 +349,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
             transition={{ duration: 1.5, ease: "easeInOut" }}
             className="absolute inset-0 w-full h-full object-cover opacity-100" 
             alt="Desktop Wallpaper"
-            // FIX: Added optimized loading attributes for performance
             loading="eager"
             decoding="async"
           />
@@ -442,7 +356,6 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* --- BACK / EXIT BUTTON --- */}
       <div className="absolute top-6 right-6 z-50 pointer-events-auto">
         <button
           onClick={onBack}
@@ -454,8 +367,7 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
         </button>
       </div>
 
-      {/* --- RESPONSIVE ICONS CONTAINER --- */}
-      <div className="absolute 
+      <nav className="absolute 
         bottom-28 left-0 w-full flex flex-row justify-center gap-4 z-40 pointer-events-auto 
         md:top-8 md:left-8 md:w-auto md:flex-col md:justify-start md:gap-6 md:bottom-auto"
       >
@@ -476,9 +388,8 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
             </span>
           </motion.button>
         ))}
-      </div>
+      </nav>
 
-      {/* Render Windows */}
       <AnimatePresence>
         {openWindows.map((window) => (
           <ResizableWindow
@@ -491,11 +402,10 @@ const VirtualDesktop = ({ startSlideshow, onBack }) => {
           />
         ))}
       </AnimatePresence>
-    </div>
+    </main>
   );
 };
 
-// --- DRAGGABLE & RESIZABLE COMPONENT ---
 const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }) => {
   const windowRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -580,7 +490,7 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
       aria-labelledby={`window-title-${window.id}`}
     >
       <div className="flex flex-col h-full bg-white/80 backdrop-blur-xl rounded-xl shadow-2xl border border-white/50 overflow-hidden relative">
-        <div 
+        <header 
           className="window-header bg-gradient-to-r from-gray-100/90 to-gray-50/90 px-4 py-3 flex items-center justify-between cursor-move border-b border-gray-200/50 shrink-0 select-none"
           onMouseDown={handleMouseDownDrag}
         >
@@ -599,21 +509,18 @@ const ResizableWindow = ({ window, isActive, onClose, onBringToFront, onUpdate }
               </svg>
             </button>
           </div>
-        </div>
+        </header>
         
-        {/* Main Content Area */}
-        <div className={`flex-1 overflow-auto ${['trainingsim', 'facereco', 'autonav', 'facerecodetails'].includes(window.id) ? 'p-0' : 'p-6'}`}>
+        <section className={`flex-1 overflow-auto ${['trainingsim', 'facereco', 'facerecodetails'].includes(window.id) ? 'p-0' : 'p-6'}`}>
           {window.body}
-        </div>
+        </section>
 
-        {/* Sticky Footer (if defined in appConfig) */}
         {window.footer && (
-          <div className="p-4 bg-white/50 border-t border-white/20 shrink-0 backdrop-blur-md">
+          <footer className="p-4 bg-white/50 border-t border-white/20 shrink-0 backdrop-blur-md">
             {window.footer}
-          </div>
+          </footer>
         )}
         
-        {/* Resize Handle (Hidden on Mobile) */}
         <div 
           className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize flex items-center justify-center z-50 hover:bg-gray-200/50 rounded-tl-lg transition-colors md:flex hidden"
           onMouseDown={handleMouseDownResize}

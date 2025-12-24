@@ -2,15 +2,13 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const LoadingScreen = ({ isLoading }) => {
-  // The SVG path data from your purple heart icon
-  const heartPath = "M12 21s-6.716-4.435-9.428-7.147C.86 12.14.5 10.736.5 9.25.5 6.462 2.962 4 5.75 4c1.74 0 3.41.81 4.25 2.09C10.84 4.81 12.51 4 14.25 4 17.038 4 19.5 6.462 19.5 9.25c0 1.486-.36 2.89-2.072 4.603C18.716 16.565 12 21 12 21z";
+  const heartPath = "M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z";
 
   return (
     <AnimatePresence>
       {isLoading && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ backgroundColor: '#f0f0f0' }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#f0f0f0]"
           initial={{ opacity: 1 }}
           exit={{ 
             scale: 50, 
@@ -21,47 +19,44 @@ const LoadingScreen = ({ isLoading }) => {
             } 
           }}
         >
-          {/* Heart Container with Pulse Animation */}
           <motion.div
             className="w-24 h-24 md:w-32 md:h-32"
             animate={{
-              scale: [1, 1.15, 1, 1.15, 1], // Double beat pattern
+              scale: [1, 1.15, 1, 1.15, 1],
             }}
             transition={{
               duration: 1.5,
               repeat: Infinity,
               ease: "easeInOut",
-              repeatDelay: 0.5 // Pause between beats
+              repeatDelay: 0.5
             }}
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 24 24" 
               className="w-full h-full"
+              aria-label="Loading..."
             >
-              {/* 1. Define the Clip Path (The Heart Shape) */}
               <defs>
                 <clipPath id="heart-fill-clip">
                   <path d={heartPath} />
                 </clipPath>
               </defs>
 
-              {/* 2. Background Heart (Light Purple Fill) */}
               <path 
                 d={heartPath} 
                 fill="#F3E8FF" 
                 stroke="none" 
               />
 
-              {/* 3. The Filling Animation (Darker Purple) */}
               <g clipPath="url(#heart-fill-clip)">
                 <motion.rect
                   x="0" 
-                  y="24" // Start at the bottom
+                  y="24" 
                   width="24" 
                   height="24"
-                  fill="#A855F7" // The Vibrant Purple
-                  animate={{ y: -28 }} // Move up to cover the heart
+                  fill="#A855F7" 
+                  animate={{ y: -28 }} 
                   transition={{
                     duration: 2,
                     ease: "easeInOut",
@@ -71,7 +66,6 @@ const LoadingScreen = ({ isLoading }) => {
                 />
               </g>
 
-              {/* 4. The Outline (Sits on top to keep edges crisp) */}
               <path 
                 d={heartPath} 
                 fill="none" 

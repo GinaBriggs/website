@@ -1,16 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import GUI from 'lil-gui'; 
+import GUI from 'lil-gui';
+import './TrainingSim.css'; // Assuming you save the CSS below in this file
 
 const TrainingSim = () => {
   const mountRef = useRef(null);
   const [status, setStatus] = useState("Initializing Weights...");
   const [epoch, setEpoch] = useState(0);
-  const [showModal, setShowModal] = useState(false); 
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // --- 1. SETUP ---
     const currentMount = mountRef.current;
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x050505);
@@ -26,7 +26,6 @@ const TrainingSim = () => {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
 
-    // --- 2. PARAMS & GUI ---
     const params = {
       learningRate: 0.3,
       noise: 0.5,
@@ -40,18 +39,14 @@ const TrainingSim = () => {
     folder.add(params, 'learningRate', 0.01, 2.0).name('Learning Speed');
     folder.add(params, 'noise', 0, 2.0).name('Distractions (Noise)');
     
-    // We keep a reference to this controller so we can update the slider visually
     const progressController = folder.add(params, 'progress', 0, 1).name('Epoch (Timeline)').listen();
     
     folder.add(params, 'autoTrain').name('Auto-Study Mode');
     folder.add(params, 'reset').name('Restart Class');
     folder.open();
 
-    gui.domElement.style.position = 'absolute';
-    gui.domElement.style.top = '10px';
-    gui.domElement.style.right = '10px';
+    gui.domElement.classList.add('custom-gui');
 
-    // --- 3. TEXTURE ---
     const getCircleTexture = () => {
       const canvas = document.createElement('canvas');
       canvas.width = 32;
@@ -66,7 +61,6 @@ const TrainingSim = () => {
       return new THREE.CanvasTexture(canvas);
     };
 
-    // --- 4. DATA ---
     const particleCount = 3000;
     const startPositions = new Float32Array(particleCount * 3);
     const endPositions = new Float32Array(particleCount * 3);
@@ -110,7 +104,6 @@ const TrainingSim = () => {
     const particles = new THREE.Points(geometry, material);
     scene.add(particles);
 
-    // --- 5. ANIMATION LOOP ---
     const clock = new THREE.Clock();
     let animationFrameId;
     const colorStart = new THREE.Color(0xff0055); 
@@ -183,114 +176,53 @@ const TrainingSim = () => {
   }, []);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', background: '#050505', fontFamily: 'Arial, sans-serif', overflow: 'hidden' }}>
-      
-      {/* 3D CANVAS */}
-      <div ref={mountRef} style={{ width: '100%', height: '100%' }} />
+    <main className="sim-container">
+      <div ref={mountRef} className="sim-canvas" />
 
-      {/* OVERLAY UI - Changed position slightly to fit inside a window better */}
-      <div style={{
-        position: 'absolute',
-        bottom: '20px', // Moved up slightly
-        left: '20px',   // Moved in slightly
-        color: 'white',
-        pointerEvents: 'none',
-        userSelect: 'none',
-        zIndex: 5
-      }}>
-        <h1 style={{ margin: 0, fontSize: '1.5rem', textShadow: '0 0 10px rgba(0,255,255,0.5)' }}>
-          TRAINING DYNAMICS
-        </h1>
-        <div style={{ marginTop: '20px', fontSize: '1.2rem', color: '#00ffff' }}>
-          {status}
-        </div>
-        <div style={{ fontSize: '1rem', opacity: 0.6 }}>
-          EPOCH: {epoch} / 100
-        </div>
+      <header className="sim-overlay">
+        <h1 className="title">TRAINING DYNAMICS</h1>
+        <div className="status">{status}</div>
+        <div className="epoch">EPOCH: {epoch} / 100</div>
         <button 
+          className="info-btn"
           onClick={() => setShowModal(true)}
-          style={{
-            marginTop: '20px',
-            pointerEvents: 'auto',
-            background: 'rgba(0, 255, 255, 0.1)',
-            border: '1px solid #00ffff',
-            color: '#00ffff',
-            padding: '10px 20px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            fontSize: '1rem',
-            transition: 'all 0.2s'
-          }}
-          onMouseOver={(e) => e.target.style.background = 'rgba(0, 255, 255, 0.3)'}
-          onMouseOut={(e) => e.target.style.background = 'rgba(0, 255, 255, 0.1)'}
         >
           Wait, what is this?
         </button>
-      </div>
+      </header>
 
-      {/* STORY MODAL */}
       {showModal && (
-        <div style={{
-          position: 'absolute',
-          top: 0, left: 0, width: '100%', height: '100%',
-          background: 'rgba(0,0,0,0.85)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 10,
-          padding: '20px'
-        }}>
-          <div style={{
-            background: '#111',
-            borderRadius: '10px',
-            maxWidth: '600px',
-            width: '100%',
-            color: '#eee',
-            border: '1px solid #333',
-            boxShadow: '0 0 20px rgba(0,0,0,0.5)',
-            display: 'flex',
-            flexDirection: 'column',
-            maxHeight: '90vh'
-          }}>
-            
-            {/* Header */}
-            <div style={{ padding: '20px', borderBottom: '1px solid #333' }}>
-               <h2 style={{ margin: 0, color: '#00ffff' }}>A Visual Story of Learning</h2>
-            </div>
+        <section className="modal-backdrop">
+          <article className="modal-content">
+            <header className="modal-header">
+               <h2>A Visual Story of Learning</h2>
+            </header>
 
-            {/* Scrollable Content */}
-            <div style={{ 
-              padding: '20px', 
-              overflowY: 'auto', 
-              lineHeight: '1.6', 
-              flex: 1,       
-              minHeight: 0   
-            }}>
-              
-              <p style={{ fontSize: '1.1rem', marginTop: 0 }}>
+            <div className="modal-body">
+              <p className="intro-text">
                 Imagine you are trying to teach a child to sort Lego bricks by color.
               </p>
 
-              <h3 style={{ color: '#ff0055', marginTop: '5px' }}>1. The Chaos (Epoch 0)</h3>
+              <h3 className="text-highlight-red">1. The Chaos (Epoch 0)</h3>
               <p>
                 At the very beginning, the child (the AI) knows nothing. They just throw the Legos everywhere. 
                 That is what you see when the simulation starts: <strong>Red Chaos</strong>. In AI, we call this "Random Initialization."
               </p>
 
-              <h3 style={{ color: '#00aaff', marginTop: '5px' }}>2. The Lesson (The Process)</h3>
+              <h3 className="text-highlight-blue">2. The Lesson (The Process)</h3>
               <p>
                 As time passes, you (the teacher) tell them "No, red goes here, blue goes there." 
                 The AI slowly moves the pieces into piles. This movement is called <strong>Gradient Descent</strong>.
                 Eventually, the pieces form neat, separate piles. This is <strong>Convergence</strong>.
               </p>
 
-              <h3 style={{ color: '#00ffff', marginTop: '5px' }}>3. Your Turn: Try the Controls</h3>
-              <ul style={{ background: '#222', padding: '5px 10px', borderRadius: '8px' }}>
-                <li style={{ marginBottom: '5px' }}>
+              <h3 className="text-highlight-cyan">3. Your Turn: Try the Controls</h3>
+              <ul className="controls-list">
+                <li>
                   <strong>Learning Speed:</strong> This is how fast the child moves the bricks. 
                   <br/><em>Try dragging it to 2.0 (Max).</em> The bricks will fly around wildly! If you learn too fast, you make mistakes.
                 </li>
-                <li style={{ marginBottom: '5px' }}>
+                <li>
                   <strong>Distractions (Noise):</strong> This is how shaky their hands are. 
                   <br/><em>Try dragging it up.</em> A little shaking is actually good because it stops them from getting stuck in the wrong spot!
                 </li>
@@ -300,38 +232,27 @@ const TrainingSim = () => {
                 </li>
               </ul>
 
-              <h3 style={{ marginTop: '0px' }}>Why does this matter?</h3>
+              <h3>Why does this matter?</h3>
               <p>
                 This isn't just a pretty animation. This is exactly how <strong>Gemini, ChatGPT, and Claude</strong> were built. 
                 They started as random noise. Over months of training (trillions of adjustments), they "converged" into the smart assistants you use today.
               </p>
 
               <button 
+                className="action-btn"
                 onClick={() => setShowModal(false)}
-                style={{
-                  background: '#00ffff',
-                  color: '#000',
-                  border: 'none',
-                  padding: '5px 15px',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  fontWeight: 'bold',
-                  fontSize: '1rem'
-                }}
               >
                 Okay, I'll try the slider!
               </button>
-
             </div>
 
-            {/* Footer */}
-            <div style={{ padding: '20px', borderTop: '1px solid #333', textAlign: 'right' }}>
-            </div>
+            <footer className="modal-footer">
                 <p>2025</p>
-          </div>
-        </div>
+            </footer>
+          </article>
+        </section>
       )}
-    </div>
+    </main>
   );
 };
 

@@ -10,46 +10,33 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <div className="absolute inset-0 w-full h-full pointer-events-none z-10">
-      
-      {/* LAYOUT CONTAINER */}
+    <section className="absolute inset-0 w-full h-full pointer-events-none z-10">
       <div className="w-full h-full flex flex-col justify-start pt-6 px-8 md:justify-start md:pt-20 md:pl-20 max-w-4xl">
-        
-        {/* Animated Headline */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={mounted ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-left"
         >
-          {/* TYPEWRITER HEADLINE 
-             - Changed "my name is" to "I'm" so it works with the cycling roles.
-             - The 'TypeAnimation' component now handles the gradient text.
-          */}
           <h1 className="text-3xl md:text-7xl font-bold text-gray-900 tracking-tight leading-tight mb-2 md:mb-4">
             Hi, I'm{' '}
             <TypeAnimation
               sequence={[
-                'Gina.', // Text 1
+                'Gina.',
                 3000, 
-                'a CS student.', // Text 2
+                'a CS student.',
                 2000,
-                'building AI Systems.', // Text 3
+                'building AI Systems.',
                 2000,
               ]}
               wrapper="span"
               speed={50}
               repeat={Infinity}
-              // This class applies the Purple/Pink Gradient to the typing text
-              className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent inline-block filter drop-shadow-sm pb-2"
+              className="bg-gradient-to-r from-purple-500 to-indigo-600 bg-clip-text text-transparent inline-block filter drop-shadow-sm pb-2"
             />
           </h1>
-        
         </motion.div>
 
-  
-            {/* --- ANIMATED CLICK INDICATOR (Desktop Only) --- */}
-        {/* POSITION FIX: 'left-1/2 -translate-x-1/2' centers it horizontally */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block">
             <motion.div
                 initial={{ opacity: 0 }}
@@ -57,7 +44,6 @@ const HeroSection = () => {
                 transition={{ duration: 0.8, delay: 1 }}
                 className="flex flex-col items-center gap-2 opacity-80 hover:opacity-100 transition-opacity"
             >
-                {/* FLOATING ANIMATION WRAPPER: Moves the whole mouse Up/Down */}
                 <motion.div
                   animate={{ y: [0, 12, 0] }}
                   transition={{
@@ -68,9 +54,7 @@ const HeroSection = () => {
                   }}
                   className="flex flex-col items-center gap-2"
                 >
-                    {/* Mouse Icon Body */}
                     <div className="relative w-7 h-11 border-2 border-white rounded-full flex justify-center pt-2 p-1 shadow-sm bg-white/10 backdrop-blur-sm">
-                      {/* The Clicker/Button Animation (Pulses) */}
                       <motion.div
                         className="w-1.5 h-2.5 bg-white rounded-full"
                         animate={{
@@ -85,14 +69,14 @@ const HeroSection = () => {
                         }}
                       />
                     </div>
-                    {/* Label */}
-                    <span className="text-white text-[10px] uppercase tracking-widest font-medium text-center block text-shadow-sm">Click Anywhere</span>
+                    <span className="text-white text-[10px] uppercase tracking-widest font-medium text-center block text-shadow-sm">
+                        Click Anywhere
+                    </span>
                 </motion.div>
             </motion.div>
         </div>
-
       </div>
-    </div>
+    </section>
   );
 };
 
